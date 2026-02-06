@@ -1,5 +1,11 @@
 # EPA Role Boundaries
 
+## Implementer Category
+
+The Programmer Agent belongs to the **implementer** category - agents that produce concrete deliverables. "Implementer" is an umbrella term. The Programmer is the first implementer role, producing code deliverables. Future implementer roles (each with its own plugin) may include: Documenter, 2D Artist, 3D Artist, Video Maker, Sound FX Artist, Music Maker, UI Designer, Copywriter, Interactive Storytelling, Marketing, App Store Optimization, SEO, and Financial agents. All implementers share the same communication protocols and workflow constraints documented in this plugin.
+
+---
+
 ## Overview
 
 The **Emasoft Programmer Agent (EPA)** is a specialized implementer agent within the Emasoft Agent System. EPA receives implementation tasks from the Emasoft Orchestrator Agent (EOA) and executes them according to specifications. EPA is responsible for writing code, implementing features, fixing bugs, and creating pull requests, but does NOT make architectural decisions, assign tasks, or communicate directly with users.
