@@ -1,13 +1,14 @@
 ---
 name: epa-handoff-management
 description: Create and receive handoff documents. Use for work state documentation.
-license: Apache-2.0
+license: MIT
 compatibility: Requires AI Maestro running.
 metadata:
   author: Emasoft
   version: 1.0.0
 context: fork
 agent: epa-programmer-main-agent
+user-invocable: false
 workflow-instruction: "support"
 procedure: "support-skill"
 ---

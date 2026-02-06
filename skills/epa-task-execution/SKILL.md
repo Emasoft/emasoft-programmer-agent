@@ -1,13 +1,14 @@
 ---
 name: epa-task-execution
 description: Execute programming tasks per requirements. Use when implementing assigned tasks.
-license: Apache-2.0
+license: MIT
 compatibility: Requires SERENA MCP activated.
 metadata:
   author: Emasoft
   version: 1.0.0
 context: fork
 agent: epa-programmer-main-agent
+user-invocable: false
 workflow-instruction: "Step 17 - Task Execution"
 procedure: "proc-execute-task"
 ---

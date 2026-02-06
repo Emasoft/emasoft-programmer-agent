@@ -18,29 +18,31 @@ The Emasoft Programmer Agent is a **general-purpose programmer** that executes i
 
 ## Components
 
-### Agents
+### Agent (1)
 
-| Agent | Description |
-|-------|-------------|
-| `epa-programmer.md` | Main general-purpose programmer agent |
+| Agent | File | Description |
+|-------|------|-------------|
+| `epa-programmer-main-agent` | `agents/epa-programmer-main-agent.md` | Main general-purpose programmer agent |
 
-### Skills
+### Skills (5)
 
 | Skill | Description |
 |-------|-------------|
-| `epa-implementation-workflow` | Core implementation workflow (Steps 14-23) |
-| `epa-code-modification` | Code editing and refactoring patterns |
-| `epa-test-writing` | Test creation patterns |
-| `epa-code-fixing` | Bug fixing and linting patterns |
-| `epa-multi-language-support` | Multi-language toolchain reference |
+| `epa-task-execution` | Execute programming tasks per requirements |
+| `epa-orchestrator-communication` | Communication with the Orchestrator (EOA) agent |
+| `epa-github-operations` | Git and GitHub operations (clone, branch, commit, PR) |
+| `epa-project-setup` | Initialize project configuration and install tooling |
+| `epa-handoff-management` | Create and receive handoff documents and bug reports |
 
 ### Hooks
 
-Minimal hooks for non-intrusive operation:
+None. The `hooks/hooks.json` is empty -- EPA uses globally installed hooks.
 
-| Hook | Event | Description |
-|------|-------|-------------|
-| `epa-serena-check` | PreToolUse | Verify SERENA MCP availability |
+### Scripts (1)
+
+| Script | Description |
+|--------|-------------|
+| `epa_validate_plugin.py` | Plugin structure validator |
 
 ## Workflow
 

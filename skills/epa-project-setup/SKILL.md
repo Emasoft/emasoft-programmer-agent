@@ -1,13 +1,14 @@
 ---
 name: epa-project-setup
 description: Setup project configuration and tooling. Use when starting work on new project.
-license: Apache-2.0
+license: MIT
 compatibility: Requires SERENA MCP activated.
 metadata:
   author: Emasoft
   version: 1.0.0
 context: fork
 agent: epa-programmer-main-agent
+user-invocable: false
 workflow-instruction: "Step 17 (first task)"
 procedure: "proc-execute-task"
 ---

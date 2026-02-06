@@ -1,13 +1,14 @@
 ---
 name: epa-github-operations
 description: Git and GitHub operations. Use for branching, commits, PRs.
-license: Apache-2.0
+license: MIT
 compatibility: Requires gh CLI authenticated.
 metadata:
   author: Emasoft
   version: 1.0.0
 context: fork
 agent: epa-programmer-main-agent
+user-invocable: false
 workflow-instruction: "Steps 19, 21, 22"
 procedure: "proc-complete-task, proc-handle-failed-pr"
 ---
@@ -151,8 +152,7 @@ Example: `feat(auth): add OAuth2 login support`
 ## Related Skills
 
 - **epa-orchestrator-communication**: For messaging EIA about PR status
-- **epa-code-implementation**: For making the actual code changes
-- **epa-testing-validation**: For running tests before PR
+- **epa-task-execution**: For implementing code changes, writing tests, and validating acceptance criteria before creating a PR
 
 ## See Also
 

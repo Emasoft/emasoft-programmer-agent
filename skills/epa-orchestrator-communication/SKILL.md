@@ -1,13 +1,14 @@
 ---
 name: epa-orchestrator-communication
 description: Communication with EOA (Orchestrator). Use for clarifications, status updates, blockers.
-license: Apache-2.0
+license: MIT
 compatibility: Requires AI Maestro running.
 metadata:
   author: Emasoft
   version: 1.0.0
 context: fork
 agent: epa-programmer-main-agent
+user-invocable: false
 workflow-instruction: "Steps 14, 15, 17, 19"
 procedure: "proc-clarify-tasks, proc-handle-feedback, proc-complete-task"
 ---
