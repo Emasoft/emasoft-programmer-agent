@@ -41,51 +41,69 @@ The task execution process follows these ordered steps:
 
 ### Step 1: Receive Task Assignment
 Parse and validate the incoming task from AI Maestro.
-See: [op-receive-task-assignment.md](references/op-receive-task-assignment.md)
-- 1.1 Read incoming AI Maestro message
-- 1.2 Extract task identifier and metadata
-- 1.3 Validate message format and required fields
-- 1.4 Acknowledge receipt to orchestrator
+
+**Reference**: [op-receive-task-assignment.md](references/op-receive-task-assignment.md)
+
+**Contents**:
+- 1.1 Read Incoming AI Maestro Message
+- 1.2 Extract Task Identifier and Metadata
+- 1.3 Validate Message Format and Required Fields
+- 1.4 Acknowledge Receipt to Orchestrator
 
 ### Step 2: Parse Task Requirements
 Understand what needs to be implemented.
-See: [op-parse-task-requirements.md](references/op-parse-task-requirements.md)
-- 2.1 Extract acceptance criteria list
-- 2.2 Identify dependencies on other tasks
-- 2.3 Determine target files and components
-- 2.4 Clarify ambiguities with orchestrator if needed
+
+**Reference**: [op-parse-task-requirements.md](references/op-parse-task-requirements.md)
+
+**Contents**:
+- 2.1 Extract Acceptance Criteria List
+- 2.2 Identify Dependencies on Other Tasks
+- 2.3 Determine Target Files and Components
+- 2.4 Clarify Ambiguities with Orchestrator
 
 ### Step 3: Setup Development Environment
 Configure tooling for the specific task.
-See: [op-setup-development-environment.md](references/op-setup-development-environment.md)
-- 3.1 Navigate to target project directory
-- 3.2 Activate required virtual environment
-- 3.3 Verify dependencies are installed
-- 3.4 Initialize SERENA MCP for code navigation
+
+**Reference**: [op-setup-development-environment.md](references/op-setup-development-environment.md)
+
+**Contents**:
+- 3.1 Navigate to Target Project Directory
+- 3.2 Activate Required Virtual Environment
+- 3.3 Verify Dependencies Are Installed
+- 3.4 Initialize SERENA MCP for Code Navigation
 
 ### Step 4: Implement Code
 Write the code following requirements.
-See: [op-implement-code.md](references/op-implement-code.md)
-- 4.1 Analyze existing code structure with SERENA
-- 4.2 Plan implementation approach
-- 4.3 Write code in small, testable increments
-- 4.4 Add documentation and comments
+
+**Reference**: [op-implement-code.md](references/op-implement-code.md)
+
+**Contents**:
+- 4.1 Analyze Existing Code Structure with SERENA
+- 4.2 Plan Implementation Approach
+- 4.3 Write Code in Small, Testable Increments
+- 4.4 Add Documentation and Comments
 
 ### Step 5: Write Tests
 Create tests for the implementation.
-See: [op-write-tests.md](references/op-write-tests.md)
-- 5.1 Identify test scenarios from requirements
-- 5.2 Write unit tests for new functions
-- 5.3 Write integration tests if applicable
-- 5.4 Run tests and fix failures
+
+**Reference**: [op-write-tests.md](references/op-write-tests.md)
+
+**Contents**:
+- 5.1 Identify Test Scenarios from Requirements
+- 5.2 Write Unit Tests for New Functions
+- 5.3 Write Integration Tests if Applicable
+- 5.4 Run Tests and Fix Failures
 
 ### Step 6: Validate Acceptance Criteria
 Verify all criteria are met before completion.
-See: [op-validate-acceptance-criteria.md](references/op-validate-acceptance-criteria.md)
-- 6.1 Review each acceptance criterion
-- 6.2 Verify implementation satisfies criterion
-- 6.3 Document validation evidence
-- 6.4 Report completion to orchestrator
+
+**Reference**: [op-validate-acceptance-criteria.md](references/op-validate-acceptance-criteria.md)
+
+**Contents**:
+- 6.1 Review Each Acceptance Criterion
+- 6.2 Verify Implementation Satisfies Criterion
+- 6.3 Document Validation Evidence
+- 6.4 Report Completion to Orchestrator
 
 ## Master Checklist
 

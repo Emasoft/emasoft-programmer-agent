@@ -504,7 +504,7 @@ This prevents EPA from consuming resources while waiting for review feedback.
 ### Related Documentation
 - [EOA_AGENT_OPERATIONS.md](../../emasoft-orchestrator-agent/docs/AGENT_OPERATIONS.md) - Orchestrator operations
 - [EIA_AGENT_OPERATIONS.md](../../emasoft-integrator-agent/docs/AGENT_OPERATIONS.md) - Integrator operations
-- [ECOS_AGENT_OPERATIONS.md](../../emasoft-chief-of-staff-agent/docs/AGENT_OPERATIONS.md) - Chief of Staff operations
+- [ECOS_AGENT_OPERATIONS.md](../../emasoft-chief-of-staff/docs/AGENT_OPERATIONS.md) - Chief of Staff operations
 - [EAA_AGENT_OPERATIONS.md](../../emasoft-architect-agent/docs/AGENT_OPERATIONS.md) - Architect operations
 
 ### External References

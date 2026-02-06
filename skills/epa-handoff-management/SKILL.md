@@ -10,7 +10,7 @@ context: fork
 agent: epa-programmer-main-agent
 user-invocable: false
 workflow-instruction: "support"
-procedure: "support-skill"
+procedure: "proc-handoff-management"
 ---
 
 # EPA Handoff Management Skill
