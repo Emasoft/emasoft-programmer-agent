@@ -1,0 +1,21 @@
+{
+  "name": "emasoft-programmer-agent",
+  "version": "1.0.0",
+  "description": "General-purpose programmer agent that executes tasks assigned by the Orchestrator. Uses globally installed skills and SERENA MCP for code navigation.",
+  "author": {
+    "name": "Emasoft",
+    "email": "713559+Emasoft@users.noreply.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Emasoft/emasoft-programmer-agent"
+  },
+  "license": "MIT",
+  "engines": {
+    "claude-code": ">=1.0.0"
+  },
+  "agents": [
+    "./agents/epa-programmer-main-agent.md"
+  ],
+  "skills": "./skills/"
+}

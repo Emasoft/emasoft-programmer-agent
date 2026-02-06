@@ -1,0 +1,19 @@
+name: Notify Marketplace
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.claude-plugin/plugin.json'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger marketplace update
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.MARKETPLACE_PAT }}
+          repository: Emasoft/emasoft-plugins
+          event-type: plugin-updated
+          client-payload: '{"plugin": "emasoft-programmer-agent"}'
