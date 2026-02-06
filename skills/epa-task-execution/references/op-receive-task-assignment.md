@@ -1,0 +1,195 @@
+---
+operation: op-receive-task-assignment
+procedure: proc-execute-task
+workflow-instruction: "Step 17.1 - Receive Task Assignment"
+parent-skill: epa-task-execution
+parent-plugin: emasoft-programmer-agent
+version: 1.0.0
+---
+
+# Operation: Receive Task Assignment
+
+Parse and validate incoming task assignments from AI Maestro messages.
+
+## When to Use
+
+Use this operation when:
+- You see the AI Maestro inbox notification banner
+- You receive a message with subject containing "TASK:" or "ASSIGNMENT:"
+- The orchestrator sends you work to perform
+
+## Prerequisites
+
+Before executing this operation:
+1. AI Maestro service must be running on localhost:23000
+2. You must have a valid session name configured
+3. The message must be in the expected JSON format
+
+## Procedure
+
+### Step 1.1: Read Incoming AI Maestro Message
+
+Check for unread messages in your inbox:
+
+```bash
+curl -s "http://localhost:23000/api/messages?agent=$SESSION_NAME&action=list&status=unread" | jq '.messages[]'
+```
+
+Look for messages where:
+- `content.type` is `"task"` or `"assignment"`
+- `subject` contains task identification
+
+### Step 1.2: Extract Task Identifier and Metadata
+
+From the message body, extract:
+
+| Field | Location | Description |
+|-------|----------|-------------|
+| Task ID | `content.task_id` | Unique identifier for tracking |
+| Task Name | `content.task_name` | Human-readable task description |
+| Priority | `priority` field | URGENT, HIGH, NORMAL, LOW |
+| Deadline | `content.deadline` | Optional completion deadline |
+| From Agent | `from` field | Orchestrator that assigned the task |
+
+Example message structure:
+```json
+{
+  "from": "orchestrator-master",
+  "to": "epa-programmer-agent",
+  "subject": "TASK: Implement user authentication",
+  "priority": "high",
+  "content": {
+    "type": "task",
+    "task_id": "TASK-2024-001",
+    "task_name": "Implement user authentication",
+    "message": "Implement the login endpoint...",
+    "requirements": [...],
+    "acceptance_criteria": [...]
+  }
+}
+```
+
+### Step 1.3: Validate Message Format and Required Fields
+
+Verify the message contains all required fields:
+
+| Required Field | Validation |
+|----------------|------------|
+| `content.type` | Must be "task" or "assignment" |
+| `content.task_id` | Must be non-empty string |
+| `content.message` | Must contain task description |
+| `content.acceptance_criteria` | Must be an array with at least one criterion |
+
+If validation fails:
+- Do NOT proceed with the task
+- Report the validation error back to sender
+- Request a properly formatted task assignment
+
+### Step 1.4: Acknowledge Receipt to Orchestrator
+
+Send acknowledgment message:
+
+```bash
+curl -X POST "http://localhost:23000/api/messages" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "<SENDER_SESSION_NAME>",
+    "subject": "ACK: <TASK_ID> received",
+    "priority": "normal",
+    "content": {
+      "type": "acknowledgment",
+      "task_id": "<TASK_ID>",
+      "message": "Task received and validated. Beginning work.",
+      "status": "in_progress"
+    }
+  }'
+```
+
+## Checklist
+
+- [ ] Checked AI Maestro inbox for unread messages
+- [ ] Identified task assignment message
+- [ ] Extracted task ID and metadata
+- [ ] Validated all required fields present
+- [ ] Sent acknowledgment to orchestrator
+- [ ] Recorded task start time for tracking
+
+## Examples
+
+### Example 1: Valid Task Assignment
+
+Incoming message:
+```json
+{
+  "from": "orchestrator-master",
+  "subject": "TASK: Add validation to user form",
+  "priority": "high",
+  "content": {
+    "type": "task",
+    "task_id": "EPA-001",
+    "message": "Add email validation to the user registration form",
+    "acceptance_criteria": [
+      "Email format is validated on submit",
+      "Invalid email shows error message",
+      "Valid email allows form submission"
+    ]
+  }
+}
+```
+
+Response:
+```json
+{
+  "to": "orchestrator-master",
+  "subject": "ACK: EPA-001 received",
+  "content": {
+    "type": "acknowledgment",
+    "task_id": "EPA-001",
+    "message": "Task received. 3 acceptance criteria identified.",
+    "status": "in_progress"
+  }
+}
+```
+
+### Example 2: Invalid Task Assignment
+
+Incoming message missing acceptance criteria:
+```json
+{
+  "from": "orchestrator-master",
+  "content": {
+    "type": "task",
+    "task_id": "EPA-002",
+    "message": "Fix the bug"
+  }
+}
+```
+
+Response:
+```json
+{
+  "to": "orchestrator-master",
+  "subject": "INVALID: EPA-002 missing required fields",
+  "priority": "high",
+  "content": {
+    "type": "error",
+    "task_id": "EPA-002",
+    "message": "Task assignment missing required field: acceptance_criteria",
+    "status": "blocked"
+  }
+}
+```
+
+## Error Handling
+
+| Error | Cause | Resolution |
+|-------|-------|------------|
+| No messages in inbox | No tasks assigned yet | Wait for orchestrator assignment |
+| Message missing task_id | Malformed message | Report error, request resubmission |
+| Missing acceptance_criteria | Incomplete task definition | Request criteria from orchestrator |
+| AI Maestro unreachable | Service not running | Verify service at localhost:23000 |
+
+## Related Operations
+
+- [op-parse-task-requirements.md](op-parse-task-requirements.md) - Next step after receiving task
+- [op-validate-acceptance-criteria.md](op-validate-acceptance-criteria.md) - Final validation step
