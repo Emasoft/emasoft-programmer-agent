@@ -198,18 +198,7 @@ EOF
 Send a message via AI Maestro:
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "<receiving-agent>",
-    "subject": "Handoff ready: <task-name>",
-    "priority": "<priority>",
-    "content": {
-      "type": "handoff",
-      "message": "Handoff document created at <path>. Status: <status>. <brief-summary>",
-      "handoff_path": "<full-path-to-current.md>"
-    }
-  }'
+amp-send <receiving-agent> "Handoff ready: <task-name>" "Handoff document created at <path>. Status: <status>. <brief-summary>" --type handoff --priority <priority>
 ```
 
 ## Checklist
@@ -353,13 +342,13 @@ Attempted to integrate the payment processing API. Implementation is blocked wai
 
 ### Error: AI Maestro Not Responding
 
-**Symptom**: The notification curl command fails or times out.
+**Symptom**: The `amp-send` command fails or times out.
 
-**Cause**: AI Maestro service is not running or the API endpoint is incorrect.
+**Cause**: AI Maestro service is not running or the AMP CLI is not configured.
 
 **Resolution**:
-1. Check if AI Maestro is running: `curl -s http://localhost:23000/health`
-2. Verify the API URL is correct
+1. Check if AI Maestro is running: `amp-inbox` (will error if service is down)
+2. Verify AMP CLI is installed and on PATH
 3. If AI Maestro is down, document in the handoff that notification was not sent
 4. The receiving agent can poll the handoff directory instead of waiting for notification
 

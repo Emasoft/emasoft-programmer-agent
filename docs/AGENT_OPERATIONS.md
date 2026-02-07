@@ -21,12 +21,12 @@
 - **Project**: Use kebab-case project identifier (must match project name)
 - **Type**: Always use `programmer` (identifies role)
 - **Number**: Zero-padded 3-digit sequence (001, 002, 003, ...)
-- **AI Maestro Identity**: Session name = registry identity for messaging
+- **AMP Identity**: Session name = AMP identity for messaging (set via `amp-init --auto`)
 - **Chosen By**: ECOS (Chief of Staff) when spawning the programmer
 - **NO `epa-` prefix**: Unlike EOA/ECOS/EIA/EAMA, EPA sessions use project-based naming
 
 ### Why This Matters
-The session name is registered in AI Maestro's agent registry and becomes the messaging address for inter-agent communication. The `<project>-programmer-<number>` format allows multiple programmer agents to work on the same project without name collisions.
+The session name is used as the AMP identity and becomes the messaging address for inter-agent communication. The `<project>-programmer-<number>` format allows multiple programmer agents to work on the same project without name collisions.
 
 ### Sequential Assignment
 ECOS maintains a counter for each project to ensure unique numbering:
@@ -129,7 +129,7 @@ aimaestro-agent.sh create $SESSION_NAME \
 ### Pre-Spawn Setup
 Before spawning, ECOS must:
 1. Copy the plugin to `~/agents/$SESSION_NAME/.claude/plugins/emasoft-programmer-agent/`
-2. Register the session name in AI Maestro
+2. Initialize AMP identity for the session (`amp-init --auto`)
 3. Create initial task description (from EOA task breakdown)
 4. Set up working directories
 5. Clone project repository into `work/` directory
@@ -180,86 +180,67 @@ EPA uses the globally configured **SERENA MCP** for code navigation and analysis
 **SERENA is NOT part of the EPA plugin** - it's a globally installed MCP server.
 
 ### Cross-Role Communication
-All cross-role communication happens via **AI Maestro messages**, not skill sharing.
+All cross-role communication happens via **AMP (Agent Messaging Protocol) messages**, not skill sharing.
 
 **Example**:
 ```
 EPA encounters architectural question
-→ EPA sends blocker message to EOA
+→ EPA sends blocker message to EOA (amp-send eoa-... "BLOCKER: ..." "..." --type alert)
 → EOA escalates to ECOS
 → ECOS delegates to EAA
 → EAA responds with architectural guidance
 → ECOS forwards to EOA
 → EOA forwards to EPA
-→ EPA resumes implementation
+→ EPA reads via amp-inbox, resumes implementation
 ```
 
 ---
 
-## 6. AI Maestro Communication
+## 6. AMP (Agent Messaging Protocol) Communication
+
+### AMP Identity Setup
+
+Before sending any messages, verify your AMP identity is initialized:
+
+```bash
+# Check current identity
+cat ~/.agent-messaging/IDENTITY.md
+
+# Initialize identity if not set up
+amp-init --auto
+```
 
 ### Sending Messages from EPA
 
 #### To EOA (Orchestrator)
 ```bash
-curl -X POST "$AIMAESTRO_API/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "from": "svgbbox-programmer-001",
-    "to": "eoa-svgbbox-orchestrator",
-    "subject": "Task Completed: calculateBBox() implementation",
-    "priority": "normal",
-    "content": {
-      "type": "completion",
-      "message": "Implemented calculateBBox() with unit tests. PR #43 created. See report at ~/agents/svgbbox-programmer-001/reports/task-complete-2026-02-06.md"
-    }
-  }'
+amp-send eoa-svgbbox-orchestrator "Task Completed: calculateBBox() implementation" "Implemented calculateBBox() with unit tests. PR #43 created. See report at ~/agents/svgbbox-programmer-001/reports/task-complete-2026-02-06.md" --type notification
 ```
 
 #### To ECOS (Chief of Staff) - For Blockers Only
 ```bash
-curl -X POST "$AIMAESTRO_API/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "from": "svgbbox-programmer-001",
-    "to": "ecos-chief-of-staff-one",
-    "subject": "BLOCKER: API dependency unavailable",
-    "priority": "urgent",
-    "content": {
-      "type": "blocker",
-      "message": "Cannot implement calculateBBox() - dependency on external API not available. See blocker report at ~/agents/svgbbox-programmer-001/reports/blocker-2026-02-06.md"
-    }
-  }'
+amp-send ecos-chief-of-staff-one "BLOCKER: API dependency unavailable" "Cannot implement calculateBBox() - dependency on external API not available. See blocker report at ~/agents/svgbbox-programmer-001/reports/blocker-2026-02-06.md" --type alert --priority urgent
 ```
 
 #### To EIA (Integrator) - For Review Requests
 ```bash
-curl -X POST "$AIMAESTRO_API/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "from": "svgbbox-programmer-001",
-    "to": "eia-integrator-one",
-    "subject": "Review Request: PR #43",
-    "priority": "high",
-    "content": {
-      "type": "review-request",
-      "message": "PR #43 ready for review. Implements calculateBBox() with 15 unit tests. All tests passing."
-    }
-  }'
+amp-send eia-integrator-one "Review Request: PR #43" "PR #43 ready for review. Implements calculateBBox() with 15 unit tests. All tests passing." --type request --priority high
 ```
 
 ### Reading Messages (EPA Inbox)
 
 ```bash
-# Check unread count
-curl -s "$AIMAESTRO_API/api/messages?agent=$SESSION_NAME&action=unread-count"
+# Check inbox for unread messages
+amp-inbox
 
-# List all unread messages
-curl -s "$AIMAESTRO_API/api/messages?agent=$SESSION_NAME&action=list&status=unread"
+# Read a specific message
+amp-read <message-id>
 
-# Mark message as read
-curl -X POST "$AIMAESTRO_API/api/messages" \
-  -d '{"action":"mark-read","message_id":"<msg-id>"}'
+# Reply to a message
+amp-reply <message-id> "Your reply text here"
+
+# Check AMP status
+amp-status
 ```
 
 ### Message Priority Levels
@@ -271,15 +252,18 @@ curl -X POST "$AIMAESTRO_API/api/messages" \
 | `normal` | Task completion, progress update | Within 15 minutes |
 | `low` | FYI, non-actionable information | When convenient |
 
-### Content Types
+### Message Types
 
 | Type | Purpose | Example |
 |------|---------|---------|
-| `completion` | Task completed | "Implemented feature X, PR created" |
-| `blocker` | Blocking issue, cannot proceed | "API dependency missing" |
+| `notification` | Task completed, FYI | "Implemented feature X, PR created" |
+| `alert` | Blocking issue, cannot proceed | "API dependency missing" |
 | `request` | Information request | "Need clarification on requirement Y" |
-| `progress` | Progress update (mid-task) | "50% complete, tests passing" |
-| `report` | Detailed report | "Test results: 15/15 passing" |
+| `status` | Progress update (mid-task) | "50% complete, tests passing" |
+| `task` | Task assignment | "Implement feature Z" |
+| `response` | Reply to a request | "Use OAuth2 authentication" |
+| `handoff` | Transfer responsibility | "Handing off to EIA for review" |
+| `ack` | Acknowledge receipt | "Received and processing" |
 
 ---
 
@@ -288,7 +272,7 @@ curl -X POST "$AIMAESTRO_API/api/messages" \
 ### Core Responsibilities
 
 #### 1. Receive Tasks from EOA
-- EOA sends task assignment via AI Maestro message
+- EOA sends task assignment via AMP message
 - EPA acknowledges receipt
 - EPA validates task clarity and completeness
 - EPA requests clarification if task is ambiguous
@@ -316,7 +300,7 @@ curl -X POST "$AIMAESTRO_API/api/messages" \
 - Create PR when task implementation complete
 - PR title: `[Project] Feature/Fix: Brief description`
 - PR body: Include task reference, test results, implementation notes
-- Request review from EIA via AI Maestro message
+- Request review from EIA via AMP message (`amp-send`)
 - **EPA does NOT merge PRs** - only EIA can merge
 
 #### 6. Update Task Status
@@ -385,7 +369,7 @@ aimaestro-agent.sh wake <project>-programmer-<number>
 
 **What happens**:
 - Tmux session brought to foreground
-- EPA checks AI Maestro inbox
+- EPA checks AMP inbox (`amp-inbox`)
 - EPA resumes implementation work
 
 ### Hibernate (Pause Session)
@@ -402,7 +386,7 @@ aimaestro-agent.sh hibernate <project>-programmer-<number>
 **What happens**:
 - Tmux session detached (keeps running in background)
 - EPA continues monitoring via hooks
-- EPA can still receive AI Maestro messages
+- EPA can still receive AMP messages
 
 ### Terminate (End Session)
 
@@ -419,7 +403,7 @@ aimaestro-agent.sh terminate <project>-programmer-<number>
 **What happens**:
 - Tmux session killed
 - EPA sends final completion report to EOA
-- AI Maestro registry entry marked as terminated
+- AMP identity deregistered
 - Working directory preserved at `~/agents/<project>-programmer-<number>/`
 
 ### Auto-Hibernate Feature
@@ -443,12 +427,12 @@ This prevents EPA from consuming resources while waiting for review feedback.
 #### Issue: EPA cannot access EOA skills
 **Symptom**: `Skill 'eoa-orchestration-patterns' not found`
 **Cause**: Plugin mutual exclusivity - EPA doesn't have EOA plugin loaded
-**Solution**: Use AI Maestro messaging to request EOA assistance
+**Solution**: Use AMP messaging (`amp-send`) to request EOA assistance
 
-#### Issue: AI Maestro message not received
+#### Issue: AMP message not received
 **Symptom**: EOA didn't get task completion notification
-**Cause**: Wrong session name or API endpoint
-**Solution**: Verify session name in registry, check `$AIMAESTRO_API` environment variable
+**Cause**: Wrong recipient name or AMP identity not initialized
+**Solution**: Verify AMP identity with `cat ~/.agent-messaging/IDENTITY.md`, check recipient name, run `amp-status` to verify connectivity
 
 #### Issue: SERENA MCP not available
 **Symptom**: `SERENA MCP server not found` or symbol search fails
@@ -508,7 +492,7 @@ This prevents EPA from consuming resources while waiting for review feedback.
 - [EAA_AGENT_OPERATIONS.md](../../emasoft-architect-agent/docs/AGENT_OPERATIONS.md) - Architect operations
 
 ### External References
-- [AI Maestro API Documentation](https://github.com/Emasoft/ai-maestro/blob/main/docs/API.md)
+- [AMP (Agent Messaging Protocol) Documentation](https://github.com/Emasoft/ai-maestro/blob/main/docs/AMP.md)
 - [Claude Code Plugin System](https://docs.anthropic.com/claude/docs/plugins)
 - [SERENA MCP Documentation](https://github.com/Emasoft/serena-mcp)
 - [GitHub Pull Requests API](https://docs.github.com/en/rest/pulls)

@@ -19,7 +19,7 @@ This skill defines all communication protocols between the Emasoft Programmer Ag
 
 ## Overview
 
-The EPA-EOA communication channel uses AI Maestro messaging for asynchronous inter-agent communication. All messages follow a structured format to ensure clear, actionable exchanges.
+The EPA-EOA communication channel uses AMP (Agent Messaging Protocol) for asynchronous inter-agent communication. AMP provides CLI commands (`amp-send`, `amp-inbox`, `amp-read`, `amp-reply`, `amp-status`) for structured, reliable message exchange.
 
 ## When to Use This Skill
 
@@ -72,8 +72,8 @@ All messages to EOA must include a `type` field in the content object:
 
 Before using any operation in this skill:
 
-1. **AI Maestro is running**: Verify with `curl -s http://localhost:23000/health`
-2. **Session is registered**: Your agent session must be registered with AI Maestro
+1. **AMP identity is initialized**: Verify with `cat ~/.agent-messaging/IDENTITY.md`. If not initialized, run `amp-init --auto`
+2. **AMP is operational**: Verify with `amp-status`
 3. **EOA is active**: The orchestrator agent session must be available
 
 ## Operations Reference
@@ -156,71 +156,68 @@ Use to handle feedback from EOA after PR review.
 - 6.4 Acknowledgment Protocol
 - 6.5 Examples
 
-## API Quick Reference
+## AMP Quick Reference
 
 ### Send Message to EOA
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "[SUBJECT]",
-    "priority": "[PRIORITY]",
-    "content": {
-      "type": "[MESSAGE_TYPE]",
-      "message": "[MESSAGE_BODY]"
-    }
-  }'
+amp-send orchestrator-master "[SUBJECT]" "[MESSAGE_BODY]" --type [MESSAGE_TYPE] --priority [PRIORITY]
 ```
 
 ### Check for Messages from EOA
 
 ```bash
-curl -s "http://localhost:23000/api/messages?agent=$SESSION_NAME&action=list&status=unread" | jq '.messages[]'
+amp-inbox
 ```
 
-### Acknowledge Message
+### Read a Specific Message
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "ACK: [ORIGINAL_SUBJECT]",
-    "priority": "normal",
-    "content": {
-      "type": "feedback-acknowledgment",
-      "message": "Acknowledged and processing.",
-      "original_message_id": "[MESSAGE_ID]"
-    }
-  }'
+amp-read <message-id>
+```
+
+### Reply to a Message (Acknowledge)
+
+```bash
+amp-reply <message-id> "Acknowledged and processing."
+```
+
+### Check AMP Status
+
+```bash
+amp-status
+```
+
+### Check AMP Identity
+
+```bash
+cat ~/.agent-messaging/IDENTITY.md
 ```
 
 ## Error Handling
 
 | Error | Cause | Resolution |
 |-------|-------|------------|
-| `Connection refused` | AI Maestro not running | Start AI Maestro service |
-| `Agent not found` | EOA session not registered | Wait for EOA to start or notify user |
-| `Message delivery failed` | Network or service issue | Retry with exponential backoff |
-| `Invalid message format` | Malformed JSON | Validate message structure before sending |
+| `AMP identity not found` | AMP not initialized | Run `amp-init --auto` |
+| `Recipient not found` | EOA session not registered | Wait for EOA to start or notify user |
+| `Message delivery failed` | Network or service issue | Retry with `amp-send` |
+| `AMP status: offline` | AMP service not running | Check with `amp-status`, restart AI Maestro service |
 
 ## Troubleshooting
 
-### AI Maestro Connection Issues
+### AMP Connection Issues
 
-If you cannot connect to AI Maestro:
+If AMP commands fail:
 
-1. Verify service is running: `curl -s http://localhost:23000/health`
-2. Check if the port is in use: `lsof -i :23000`
-3. Restart AI Maestro if needed
+1. Check AMP status: `amp-status`
+2. Verify identity: `cat ~/.agent-messaging/IDENTITY.md`
+3. Re-initialize if needed: `amp-init --auto`
 
 ### EOA Not Responding
 
 If EOA does not respond within expected time:
 
-1. Check EOA session status via AI Maestro
+1. Check EOA status via `amp-status`
 2. Escalate to user if EOA is unavailable
 3. Document the delay in status update
 
@@ -228,7 +225,7 @@ If EOA does not respond within expected time:
 
 If message delivery fails:
 
-1. Verify message JSON is valid
-2. Check session names are correct
+1. Verify recipient name is correct
+2. Check AMP status: `amp-status`
 3. Retry up to 3 times with 5-second delays
 4. Report to user if all retries fail

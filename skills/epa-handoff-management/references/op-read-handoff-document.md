@@ -123,17 +123,7 @@ Re-run the `last_test_command` to verify the checkpoint is still valid before co
 After successfully reading the handoff, notify the delegating agent:
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "<delegating-agent>",
-    "subject": "Handoff received: <task-name>",
-    "priority": "normal",
-    "content": {
-      "type": "acknowledgment",
-      "message": "Received handoff for <task-name>. Resuming from Phase 2."
-    }
-  }'
+amp-send <delegating-agent> "Handoff received: <task-name>" "Received handoff for <task-name>. Resuming from Phase 2." --type acknowledgment --priority normal
 ```
 
 ## Checklist

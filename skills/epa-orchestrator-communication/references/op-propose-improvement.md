@@ -194,7 +194,7 @@ Follow these steps to propose an improvement:
 4. **Consider alternatives**: Evaluate other approaches
 5. **Estimate effort**: Calculate implementation time
 6. **Compose proposal**: Use the format from section 4.2
-7. **Send to EOA**: Execute the curl command
+7. **Send to EOA**: Execute the `amp-send` command
 8. **Wait for response**: Do not implement until approved (unless auto-proceed)
 9. **Implement if approved**: Proceed with the improvement
 10. **Document the change**: Note the improvement in commit message
@@ -257,47 +257,7 @@ When EOA responds:
 **Situation**: Found a more efficient algorithm.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "PROPOSAL: TASK-123 - Use Binary Search Instead of Linear Search",
-    "priority": "normal",
-    "content": {
-      "type": "improvement-proposal",
-      "message": "Proposing to use binary search instead of linear search for order lookup.",
-      "task_id": "TASK-123",
-      "proposal_type": "algorithm-improvement",
-      "current_approach": "The task specifies iterating through the order list to find matching orders (linear search, O(n) complexity).",
-      "proposed_approach": "Use binary search on the sorted order list (O(log n) complexity). The order list is already sorted by order_id.",
-      "justification": {
-        "benefits": [
-          "Reduces search time from O(n) to O(log n)",
-          "For 100,000 orders: reduces from 100,000 to 17 comparisons",
-          "No additional memory required"
-        ],
-        "metrics": {
-          "time_complexity": "O(n) -> O(log n)",
-          "comparisons_100k": "100000 -> 17",
-          "memory": "no change"
-        },
-        "risks": [
-          "Requires list to remain sorted - already guaranteed by existing code"
-        ]
-      },
-      "effort_estimate": "30 minutes",
-      "impact_on_timeline": "No delay - within original estimate",
-      "alternatives_considered": [
-        {
-          "approach": "Hash table lookup",
-          "why_rejected": "Would require additional memory for hash table, binary search sufficient"
-        }
-      ],
-      "approval_required": true,
-      "will_proceed_if_no_response": "yes",
-      "auto_proceed_after": "30 minutes"
-    }
-  }'
+amp-send orchestrator-master "PROPOSAL: TASK-123 - Use Binary Search Instead of Linear Search" "Proposing to use binary search instead of linear search for order lookup. Current approach: linear search O(n). Proposed: binary search O(log n) on already-sorted order list. Benefits: For 100,000 orders reduces from 100,000 to 17 comparisons, no additional memory. Risk: Requires sorted list - already guaranteed by existing code. Effort: 30 minutes. Timeline impact: none. Alternative considered: Hash table lookup (rejected - additional memory not justified). Approval required: yes, will auto-proceed after 30 minutes if no objection." --type request
 ```
 
 ### Example 2: Code Reuse Opportunity
@@ -305,42 +265,7 @@ curl -X POST "http://localhost:23000/api/messages" \
 **Situation**: Found existing code that can be reused.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "PROPOSAL: TASK-456 - Reuse Existing Validation Module",
-    "priority": "normal",
-    "content": {
-      "type": "improvement-proposal",
-      "message": "Proposing to reuse existing InputValidator instead of writing new validation logic.",
-      "task_id": "TASK-456",
-      "proposal_type": "code-reuse",
-      "current_approach": "Task describes implementing input validation from scratch for the new form handler.",
-      "proposed_approach": "Reuse the existing InputValidator class from src/utils/validation.py. It already handles all required validation types and is well-tested.",
-      "justification": {
-        "benefits": [
-          "Reduces implementation time by 2 hours",
-          "Leverages existing, tested code",
-          "Maintains consistency with rest of codebase",
-          "No new code to maintain"
-        ],
-        "metrics": {
-          "new_code_lines": "~200 -> 10 (import and usage)",
-          "time_saved": "2 hours",
-          "test_coverage": "Already 95% covered"
-        },
-        "risks": [
-          "None - existing module is stable and well-tested"
-        ]
-      },
-      "effort_estimate": "15 minutes (vs 2 hours for new implementation)",
-      "impact_on_timeline": "Saves 1.75 hours",
-      "approval_required": true,
-      "will_proceed_if_no_response": "yes",
-      "auto_proceed_after": "30 minutes"
-    }
-  }'
+amp-send orchestrator-master "PROPOSAL: TASK-456 - Reuse Existing Validation Module" "Proposing to reuse existing InputValidator instead of writing new validation logic. Current approach: implement input validation from scratch. Proposed: reuse InputValidator from src/utils/validation.py (already handles all required types, well-tested at 95% coverage). Benefits: Saves 2 hours, leverages tested code, maintains consistency. Code lines: ~200 -> 10. Risk: none. Effort: 15 minutes. Timeline impact: saves 1.75 hours. Approval required: yes, will auto-proceed after 30 minutes if no objection." --type request
 ```
 
 ### Example 3: Security Enhancement
@@ -348,39 +273,7 @@ curl -X POST "http://localhost:23000/api/messages" \
 **Situation**: Identified security improvement opportunity.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "PROPOSAL: TASK-789 - Add Input Sanitization for SQL Queries",
-    "priority": "high",
-    "content": {
-      "type": "improvement-proposal",
-      "message": "Proposing to add parameterized queries to prevent SQL injection.",
-      "task_id": "TASK-789",
-      "proposal_type": "security-enhancement",
-      "current_approach": "The task specification uses string concatenation for SQL query building.",
-      "proposed_approach": "Use parameterized queries with the database library'\''s built-in escaping.",
-      "justification": {
-        "benefits": [
-          "Prevents SQL injection attacks",
-          "Industry standard security practice",
-          "No performance overhead"
-        ],
-        "metrics": {
-          "security_risk": "high -> eliminated",
-          "code_change": "minor refactor"
-        },
-        "risks": [
-          "None - parameterized queries are strictly safer"
-        ]
-      },
-      "effort_estimate": "45 minutes",
-      "impact_on_timeline": "Adds 45 minutes but strongly recommended",
-      "approval_required": true,
-      "will_proceed_if_no_response": "no"
-    }
-  }'
+amp-send orchestrator-master "PROPOSAL: TASK-789 - Add Input Sanitization for SQL Queries" "Proposing to add parameterized queries to prevent SQL injection. Current approach: string concatenation for SQL query building. Proposed: use parameterized queries with database library built-in escaping. Benefits: Prevents SQL injection (industry standard), no performance overhead. Security risk: high -> eliminated. Effort: 45 minutes. Timeline impact: adds 45 minutes but strongly recommended. Approval required: yes, will NOT auto-proceed." --type request --priority high
 ```
 
 ## Error Handling

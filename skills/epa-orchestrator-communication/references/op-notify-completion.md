@@ -213,7 +213,7 @@ Follow these steps to notify completion:
 4. **Create PR (if applicable)**: Open pull request
 5. **Self-review**: Review your own changes one more time
 6. **Compose notification**: Use the format from section 5.2
-7. **Send to EOA**: Execute the curl command
+7. **Send to EOA**: Execute the `amp-send` command
 8. **Wait for feedback**: Monitor for EOA response
 
 ## Checklist
@@ -240,48 +240,7 @@ Use this checklist before sending completion notification:
 Execute this command to send the completion notification:
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "COMPLETE: TASK-123 - User Authentication Module",
-    "priority": "high",
-    "content": {
-      "type": "completion-notification",
-      "message": "User authentication module implementation complete. All tests passing, PR ready for review.",
-      "task_id": "TASK-123",
-      "status": "completed",
-      "deliverables": {
-        "code": {
-          "branch": "feature/TASK-123-user-auth",
-          "commits": 5,
-          "files_changed": 8,
-          "lines_added": 342,
-          "lines_removed": 45
-        },
-        "tests": {
-          "total": 24,
-          "passed": 24,
-          "coverage_percent": 92
-        },
-        "documentation": {
-          "updated": true,
-          "files": ["docs/api/auth.md"]
-        },
-        "pr": {
-          "created": true,
-          "url": "https://github.com/org/repo/pull/456",
-          "title": "feat(auth): Add user authentication module"
-        }
-      },
-      "implementation_notes": "Used JWT tokens with 24-hour expiry as specified. Implemented refresh token rotation for security.",
-      "known_limitations": [
-        "Rate limiting not implemented (out of scope per task description)"
-      ],
-      "testing_notes": "Run auth tests with: uv run pytest tests/unit/test_auth.py -v",
-      "ready_for_review": true
-    }
-  }'
+amp-send orchestrator-master "COMPLETE: TASK-123 - User Authentication Module" "User authentication module implementation complete. All tests passing, PR ready for review. Branch: feature/TASK-123-user-auth (5 commits, 8 files changed, +342/-45 lines). Tests: 24/24 passing, 92% coverage. Docs updated: docs/api/auth.md. PR: https://github.com/org/repo/pull/456 - feat(auth): Add user authentication module. Implementation notes: Used JWT tokens with 24-hour expiry as specified, implemented refresh token rotation for security. Known limitations: Rate limiting not implemented (out of scope). Testing: uv run pytest tests/unit/test_auth.py -v" --type notification --priority high
 ```
 
 ## 5.5 Examples
@@ -291,46 +250,7 @@ curl -X POST "http://localhost:23000/api/messages" \
 **Situation**: New feature fully implemented with tests.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "COMPLETE: TASK-456 - Order Processing Pipeline",
-    "priority": "high",
-    "content": {
-      "type": "completion-notification",
-      "message": "Order processing pipeline implementation complete with full test coverage.",
-      "task_id": "TASK-456",
-      "status": "completed",
-      "deliverables": {
-        "code": {
-          "branch": "feature/TASK-456-order-pipeline",
-          "commits": 8,
-          "files_changed": 12,
-          "lines_added": 567,
-          "lines_removed": 23
-        },
-        "tests": {
-          "total": 35,
-          "passed": 35,
-          "coverage_percent": 94
-        },
-        "documentation": {
-          "updated": true,
-          "files": ["docs/architecture/order-pipeline.md", "docs/api/orders.md"]
-        },
-        "pr": {
-          "created": true,
-          "url": "https://github.com/org/repo/pull/789",
-          "title": "feat(orders): Add order processing pipeline"
-        }
-      },
-      "implementation_notes": "Implemented async pipeline with retry logic. Orders processed in batches of 100 for efficiency.",
-      "known_limitations": [],
-      "testing_notes": "Full test suite: uv run pytest tests/ -v. Pipeline can be manually tested with: uv run python scripts/test_order_pipeline.py",
-      "ready_for_review": true
-    }
-  }'
+amp-send orchestrator-master "COMPLETE: TASK-456 - Order Processing Pipeline" "Order processing pipeline implementation complete with full test coverage. Branch: feature/TASK-456-order-pipeline (8 commits, 12 files changed, +567/-23 lines). Tests: 35/35 passing, 94% coverage. Docs updated: docs/architecture/order-pipeline.md, docs/api/orders.md. PR: https://github.com/org/repo/pull/789 - feat(orders): Add order processing pipeline. Implementation notes: Implemented async pipeline with retry logic, orders processed in batches of 100 for efficiency. Testing: uv run pytest tests/ -v or manually: uv run python scripts/test_order_pipeline.py" --type notification --priority high
 ```
 
 ### Example 2: Bug Fix Complete
@@ -338,46 +258,7 @@ curl -X POST "http://localhost:23000/api/messages" \
 **Situation**: Bug fix implemented and verified.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "COMPLETE: TASK-789 - Fix Race Condition in Cache Update",
-    "priority": "high",
-    "content": {
-      "type": "completion-notification",
-      "message": "Race condition in cache update fixed. Added mutex lock and regression tests.",
-      "task_id": "TASK-789",
-      "status": "completed",
-      "deliverables": {
-        "code": {
-          "branch": "fix/TASK-789-cache-race-condition",
-          "commits": 3,
-          "files_changed": 2,
-          "lines_added": 45,
-          "lines_removed": 12
-        },
-        "tests": {
-          "total": 8,
-          "passed": 8,
-          "coverage_percent": 100
-        },
-        "documentation": {
-          "updated": false,
-          "files": []
-        },
-        "pr": {
-          "created": true,
-          "url": "https://github.com/org/repo/pull/101",
-          "title": "fix(cache): Add mutex lock to prevent race condition"
-        }
-      },
-      "implementation_notes": "Added threading.Lock() around cache write operations. Verified fix under concurrent load testing.",
-      "known_limitations": [],
-      "testing_notes": "Regression test: uv run pytest tests/unit/test_cache.py::test_concurrent_updates -v --count=100",
-      "ready_for_review": true
-    }
-  }'
+amp-send orchestrator-master "COMPLETE: TASK-789 - Fix Race Condition in Cache Update" "Race condition in cache update fixed. Added mutex lock and regression tests. Branch: fix/TASK-789-cache-race-condition (3 commits, 2 files changed, +45/-12 lines). Tests: 8/8 passing, 100% coverage. PR: https://github.com/org/repo/pull/101 - fix(cache): Add mutex lock to prevent race condition. Implementation notes: Added threading.Lock() around cache write operations, verified fix under concurrent load testing. Testing: uv run pytest tests/unit/test_cache.py::test_concurrent_updates -v --count=100" --type notification --priority high
 ```
 
 ### Example 3: Refactoring Complete
@@ -385,54 +266,15 @@ curl -X POST "http://localhost:23000/api/messages" \
 **Situation**: Refactoring task completed.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "COMPLETE: TASK-101 - Refactor Payment Module",
-    "priority": "high",
-    "content": {
-      "type": "completion-notification",
-      "message": "Payment module refactored. Reduced complexity, improved testability.",
-      "task_id": "TASK-101",
-      "status": "completed",
-      "deliverables": {
-        "code": {
-          "branch": "refactor/TASK-101-payment-module",
-          "commits": 6,
-          "files_changed": 5,
-          "lines_added": 234,
-          "lines_removed": 312
-        },
-        "tests": {
-          "total": 28,
-          "passed": 28,
-          "coverage_percent": 96
-        },
-        "documentation": {
-          "updated": true,
-          "files": ["docs/architecture/payment-module.md"]
-        },
-        "pr": {
-          "created": true,
-          "url": "https://github.com/org/repo/pull/202",
-          "title": "refactor(payment): Simplify payment processing module"
-        }
-      },
-      "implementation_notes": "Split monolithic PaymentProcessor into PaymentValidator, PaymentExecutor, and PaymentNotifier. Reduced cyclomatic complexity from 32 to 8.",
-      "known_limitations": [],
-      "testing_notes": "All existing tests pass. New unit tests added for each extracted class.",
-      "ready_for_review": true
-    }
-  }'
+amp-send orchestrator-master "COMPLETE: TASK-101 - Refactor Payment Module" "Payment module refactored. Reduced complexity, improved testability. Branch: refactor/TASK-101-payment-module (6 commits, 5 files changed, +234/-312 lines). Tests: 28/28 passing, 96% coverage. Docs updated: docs/architecture/payment-module.md. PR: https://github.com/org/repo/pull/202 - refactor(payment): Simplify payment processing module. Implementation notes: Split monolithic PaymentProcessor into PaymentValidator, PaymentExecutor, and PaymentNotifier. Reduced cyclomatic complexity from 32 to 8. Testing: All existing tests pass, new unit tests added for each extracted class." --type notification --priority high
 ```
 
 ## Error Handling
 
 | Error | Cause | Resolution |
 |-------|-------|------------|
-| `Connection refused` | AI Maestro not running | Start AI Maestro service |
-| `Message delivery failed` | Network issue | Retry up to 3 times |
+| `AMP status: offline` | AMP service not running | Check `amp-status`, start AI Maestro service |
+| `Message delivery failed` | Network issue | Retry `amp-send` up to 3 times |
 | `Tests failing after notification` | Regression introduced | Send correction notification |
 
 ### Post-Notification Issues
@@ -440,20 +282,5 @@ curl -X POST "http://localhost:23000/api/messages" \
 If you discover an issue after sending completion notification:
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "CORRECTION: TASK-123 - Issue Found After Completion",
-    "priority": "high",
-    "content": {
-      "type": "status-update",
-      "message": "CORRECTION to previous completion notification. Issue found and being addressed.",
-      "task_id": "TASK-123",
-      "status": "in-progress",
-      "issue_discovered": "[Description of issue]",
-      "action_being_taken": "[What you are doing to fix it]",
-      "revised_completion_estimate": "[New estimate]"
-    }
-  }'
+amp-send orchestrator-master "CORRECTION: TASK-123 - Issue Found After Completion" "CORRECTION to previous completion notification. Issue found and being addressed. Issue: [Description of issue]. Action: [What you are doing to fix it]. Revised estimate: [New estimate]." --type status --priority high
 ```

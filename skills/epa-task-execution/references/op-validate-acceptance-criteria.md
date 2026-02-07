@@ -113,34 +113,7 @@ If ANY criterion is NOT PASSED:
 Send completion message with validation summary:
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "<ORCHESTRATOR_SESSION>",
-    "subject": "COMPLETE: <TASK_ID>",
-    "priority": "normal",
-    "content": {
-      "type": "completion",
-      "task_id": "<TASK_ID>",
-      "message": "Task completed. All acceptance criteria validated.",
-      "status": "complete",
-      "validation_summary": {
-        "total_criteria": 3,
-        "passed": 3,
-        "failed": 0,
-        "criteria": [
-          {"id": "AC-001", "status": "PASSED", "evidence": "9 tests passed"},
-          {"id": "AC-002", "status": "PASSED", "evidence": "Error message verified"},
-          {"id": "AC-003", "status": "PASSED", "evidence": "Submit flow tested"}
-        ]
-      },
-      "files_changed": [
-        "src/validators/user.py",
-        "tests/unit/test_validators.py"
-      ],
-      "commits": ["abc123f"]
-    }
-  }'
+amp-send <ORCHESTRATOR_SESSION> "COMPLETE: <TASK_ID>" "Task completed. All acceptance criteria validated." --type completion --priority normal
 ```
 
 ## Checklist

@@ -32,7 +32,7 @@ Before executing this operation:
 Check for unread messages in your inbox:
 
 ```bash
-curl -s "http://localhost:23000/api/messages?agent=$SESSION_NAME&action=list&status=unread" | jq '.messages[]'
+amp-inbox
 ```
 
 Look for messages where:
@@ -90,19 +90,7 @@ If validation fails:
 Send acknowledgment message:
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "<SENDER_SESSION_NAME>",
-    "subject": "ACK: <TASK_ID> received",
-    "priority": "normal",
-    "content": {
-      "type": "acknowledgment",
-      "task_id": "<TASK_ID>",
-      "message": "Task received and validated. Beginning work.",
-      "status": "in_progress"
-    }
-  }'
+amp-send <SENDER_SESSION_NAME> "ACK: <TASK_ID> received" "Task received and validated. Beginning work." --type acknowledgment --priority normal
 ```
 
 ## Checklist

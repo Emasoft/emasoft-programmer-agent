@@ -86,7 +86,7 @@ Follow these steps to request clarification:
 2. **Formulate specific questions**: Create clear, answerable questions (not vague requests)
 3. **Document your current understanding**: Show what you already know
 4. **Compose the message**: Use the format specified in section 1.2
-5. **Send via AI Maestro**: Execute the curl command to send
+5. **Send via AMP**: Execute the `amp-send` command
 6. **Wait for response**: Monitor inbox for EOA reply
 7. **Acknowledge receipt**: Confirm you received the clarification
 8. **Update task understanding**: Incorporate clarification into your work
@@ -109,24 +109,7 @@ Use this checklist before sending a clarification request:
 Execute this command to send the clarification request:
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "CLARIFICATION: TASK-123 - API Authentication Method",
-    "priority": "high",
-    "content": {
-      "type": "clarification-request",
-      "message": "I need clarification on the authentication method for the external API integration.",
-      "task_id": "TASK-123",
-      "questions": [
-        "Should I use OAuth2 or API key authentication?",
-        "Is there an existing credentials store I should use?"
-      ],
-      "context": "The task mentions integrating with ExternalService API but does not specify the authentication approach. I found two authentication methods in their documentation.",
-      "impact": "Cannot proceed with API client implementation until authentication approach is confirmed."
-    }
-  }'
+amp-send orchestrator-master "CLARIFICATION: TASK-123 - API Authentication Method" "I need clarification on the authentication method for the external API integration. Questions: 1) Should I use OAuth2 or API key authentication? 2) Is there an existing credentials store I should use? Context: The task mentions integrating with ExternalService API but does not specify the authentication approach. I found two authentication methods in their documentation. Impact: Cannot proceed with API client implementation until authentication approach is confirmed." --type request --priority high
 ```
 
 ## 1.4 Handling the Response
@@ -142,19 +125,16 @@ When EOA responds to your clarification request:
 
 ### Acknowledgment Format
 
+When you receive a clarification response, reply directly to it:
+
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "ACK: CLARIFICATION: TASK-123 - API Authentication Method",
-    "priority": "normal",
-    "content": {
-      "type": "feedback-acknowledgment",
-      "message": "Clarification received. Will proceed with OAuth2 authentication using the central credentials store.",
-      "original_subject": "CLARIFICATION: TASK-123 - API Authentication Method"
-    }
-  }'
+amp-reply <message-id> "Clarification received. Will proceed with OAuth2 authentication using the central credentials store."
+```
+
+Or send a new acknowledgment message:
+
+```bash
+amp-send orchestrator-master "ACK: CLARIFICATION: TASK-123 - API Authentication Method" "Clarification received. Will proceed with OAuth2 authentication using the central credentials store." --type ack
 ```
 
 ## 1.5 Examples
@@ -164,25 +144,7 @@ curl -X POST "http://localhost:23000/api/messages" \
 **Situation**: Task says "optimize database queries" without specifying targets.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "CLARIFICATION: TASK-456 - Database Optimization Targets",
-    "priority": "high",
-    "content": {
-      "type": "clarification-request",
-      "message": "I need clarification on the performance targets for database query optimization.",
-      "task_id": "TASK-456",
-      "questions": [
-        "What is the target query response time?",
-        "Which specific queries should be prioritized?",
-        "Are there memory usage constraints to consider?"
-      ],
-      "context": "The task mentions optimizing database queries but does not specify performance targets or which queries are problematic. Current slowest query takes 2.3 seconds.",
-      "impact": "Cannot determine optimization success criteria or prioritization without targets."
-    }
-  }'
+amp-send orchestrator-master "CLARIFICATION: TASK-456 - Database Optimization Targets" "I need clarification on the performance targets for database query optimization. Questions: 1) What is the target query response time? 2) Which specific queries should be prioritized? 3) Are there memory usage constraints to consider? Context: The task mentions optimizing database queries but does not specify performance targets or which queries are problematic. Current slowest query takes 2.3 seconds. Impact: Cannot determine optimization success criteria or prioritization without targets." --type request --priority high
 ```
 
 ### Example 2: Missing Dependency Information
@@ -190,25 +152,7 @@ curl -X POST "http://localhost:23000/api/messages" \
 **Situation**: Task requires integration with a service not mentioned in project docs.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "CLARIFICATION: TASK-789 - PaymentGateway Service Details",
-    "priority": "high",
-    "content": {
-      "type": "clarification-request",
-      "message": "I need details about the PaymentGateway service for integration.",
-      "task_id": "TASK-789",
-      "questions": [
-        "What is the PaymentGateway API endpoint URL?",
-        "Is there existing client code I should reuse?",
-        "What test environment is available?"
-      ],
-      "context": "Task references PaymentGateway service but I found no documentation or existing code for it in the codebase.",
-      "impact": "Cannot begin integration work without service details."
-    }
-  }'
+amp-send orchestrator-master "CLARIFICATION: TASK-789 - PaymentGateway Service Details" "I need details about the PaymentGateway service for integration. Questions: 1) What is the PaymentGateway API endpoint URL? 2) Is there existing client code I should reuse? 3) What test environment is available? Context: Task references PaymentGateway service but I found no documentation or existing code for it in the codebase. Impact: Cannot begin integration work without service details." --type request --priority high
 ```
 
 ### Example 3: Conflicting Requirements
@@ -216,34 +160,17 @@ curl -X POST "http://localhost:23000/api/messages" \
 **Situation**: Two parts of the task description contradict each other.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "CLARIFICATION: TASK-101 - Conflicting Error Handling Requirements",
-    "priority": "high",
-    "content": {
-      "type": "clarification-request",
-      "message": "The task contains conflicting requirements for error handling.",
-      "task_id": "TASK-101",
-      "questions": [
-        "Should errors fail fast (as stated in section 2) or be silently logged (as stated in section 4)?",
-        "Which requirement takes precedence?"
-      ],
-      "context": "Section 2 says to implement fail-fast error handling. Section 4 says errors should be logged silently without disrupting the user. These approaches are mutually exclusive.",
-      "impact": "Cannot implement error handling without knowing which approach to use."
-    }
-  }'
+amp-send orchestrator-master "CLARIFICATION: TASK-101 - Conflicting Error Handling Requirements" "The task contains conflicting requirements for error handling. Questions: 1) Should errors fail fast (as stated in section 2) or be silently logged (as stated in section 4)? 2) Which requirement takes precedence? Context: Section 2 says to implement fail-fast error handling. Section 4 says errors should be logged silently without disrupting the user. These approaches are mutually exclusive. Impact: Cannot implement error handling without knowing which approach to use." --type request --priority high
 ```
 
 ## Error Handling
 
 | Error | Cause | Resolution |
 |-------|-------|------------|
-| `Connection refused` | AI Maestro not running | Start AI Maestro: check service status |
-| `Agent not found: orchestrator-master` | EOA session not registered | Wait for EOA to start or notify user |
-| `Invalid JSON` | Malformed message content | Validate JSON syntax before sending |
-| `No response within 30 minutes` | EOA busy or unavailable | Send reminder with `urgent` priority |
+| `AMP identity not found` | AMP not initialized | Run `amp-init --auto` |
+| `Recipient not found: orchestrator-master` | EOA session not registered | Wait for EOA to start or notify user |
+| `AMP status: offline` | AMP service not running | Check `amp-status`, restart AI Maestro |
+| `No response within 30 minutes` | EOA busy or unavailable | Send reminder with `--priority urgent` |
 | `Response does not answer questions` | Miscommunication | Send follow-up with specific unanswered questions |
 
 ### Retry Logic
@@ -253,10 +180,7 @@ If message delivery fails:
 ```bash
 # Retry up to 3 times with 5-second delays
 for i in 1 2 3; do
-  response=$(curl -s -X POST "http://localhost:23000/api/messages" \
-    -H "Content-Type: application/json" \
-    -d '[MESSAGE_JSON]')
-  if echo "$response" | grep -q '"success":true'; then
+  if amp-send orchestrator-master "[SUBJECT]" "[MESSAGE]" --type request --priority high; then
     echo "Message sent successfully"
     break
   fi

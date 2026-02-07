@@ -162,7 +162,7 @@ Follow these steps to report a blocker:
 5. **Identify blocker type**: Use standardized types
 6. **Propose solutions**: Think of possible resolutions
 7. **Compose message**: Use the format from section 3.2
-8. **Send with urgent priority**: Execute the curl command
+8. **Send with urgent priority**: Execute `amp-send` with `--priority urgent`
 9. **Wait for response**: Monitor inbox for EOA reply
 10. **Continue if possible**: Work on unblocked items if any exist
 
@@ -200,22 +200,7 @@ Use this checklist before reporting a blocker:
 ### Escalation Message
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "ESCALATION: BLOCKER: TASK-123 - [Description]",
-    "priority": "urgent",
-    "content": {
-      "type": "blocker-report",
-      "message": "ESCALATION: Original blocker report sent [time ago], no response received. Task remains blocked.",
-      "task_id": "TASK-123",
-      "severity": "critical",
-      "original_report_time": "[timestamp]",
-      "escalation_level": 1,
-      "request": "Please acknowledge and provide resolution path."
-    }
-  }'
+amp-send orchestrator-master "ESCALATION: BLOCKER: TASK-123 - [Description]" "ESCALATION: Original blocker report sent [time ago], no response received. Task remains blocked. Severity: critical. Escalation level: 1. Please acknowledge and provide resolution path." --type alert --priority urgent
 ```
 
 ## 3.5 Examples
@@ -225,35 +210,7 @@ curl -X POST "http://localhost:23000/api/messages" \
 **Situation**: Cannot access external API due to missing credentials.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "BLOCKER: TASK-123 - Missing PaymentGateway API Credentials",
-    "priority": "urgent",
-    "content": {
-      "type": "blocker-report",
-      "message": "Cannot proceed with PaymentGateway integration - API credentials not found.",
-      "task_id": "TASK-123",
-      "severity": "critical",
-      "blocker_type": "missing-credentials",
-      "description": "The task requires integration with PaymentGateway API. I searched the codebase, environment variables, and secrets store but found no credentials. API returns 401 Unauthorized.",
-      "impact": "Cannot implement, test, or verify any API integration functionality. Task is 100% blocked.",
-      "attempted_resolutions": [
-        "Searched .env files for API keys",
-        "Checked secrets manager (vault)",
-        "Searched codebase for existing credentials",
-        "Checked project documentation"
-      ],
-      "proposed_solutions": [
-        "Provide API credentials via secrets manager",
-        "Provide test/sandbox credentials for development",
-        "Grant access to credentials documentation"
-      ],
-      "unblocking_requirements": "PaymentGateway API key and secret",
-      "progress_before_block": "Unit tests written with mocks, local logic implemented, ready for real integration"
-    }
-  }'
+amp-send orchestrator-master "BLOCKER: TASK-123 - Missing PaymentGateway API Credentials" "Cannot proceed with PaymentGateway integration - API credentials not found. Severity: critical. Blocker type: missing-credentials. The task requires integration with PaymentGateway API. I searched the codebase, environment variables, and secrets store but found no credentials. API returns 401 Unauthorized. Impact: Cannot implement, test, or verify any API integration functionality. Task is 100% blocked. Attempted: Searched .env files, checked secrets manager, searched codebase, checked project docs. Proposed solutions: 1) Provide API credentials via secrets manager 2) Provide test/sandbox credentials 3) Grant access to credentials documentation. Unblocking requirement: PaymentGateway API key and secret. Progress before block: Unit tests written with mocks, local logic implemented, ready for real integration." --type alert --priority urgent
 ```
 
 ### Example 2: External Service Down
@@ -261,35 +218,7 @@ curl -X POST "http://localhost:23000/api/messages" \
 **Situation**: Required external service is unavailable.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "BLOCKER: TASK-456 - AuthService Down",
-    "priority": "urgent",
-    "content": {
-      "type": "blocker-report",
-      "message": "AuthService is returning 503 errors. Cannot test authentication flow.",
-      "task_id": "TASK-456",
-      "severity": "high",
-      "blocker_type": "external-dependency",
-      "description": "The AuthService at auth.internal.example.com returns 503 Service Unavailable. Checked service status page - no reported outages. Issue started approximately 30 minutes ago.",
-      "impact": "Cannot test any authentication functionality. Can continue writing code but cannot verify it works.",
-      "attempted_resolutions": [
-        "Verified service URL is correct",
-        "Checked network connectivity",
-        "Tried different endpoints on same service",
-        "Checked service status page"
-      ],
-      "proposed_solutions": [
-        "Wait for service recovery",
-        "Use staging AuthService if available",
-        "Contact infrastructure team for status"
-      ],
-      "unblocking_requirements": "AuthService restored to operational status",
-      "progress_before_block": "Authentication module 80% complete, blocked on integration testing"
-    }
-  }'
+amp-send orchestrator-master "BLOCKER: TASK-456 - AuthService Down" "AuthService is returning 503 errors. Cannot test authentication flow. Severity: high. Blocker type: external-dependency. The AuthService at auth.internal.example.com returns 503 Service Unavailable. Checked service status page - no reported outages. Issue started approximately 30 minutes ago. Impact: Cannot test any authentication functionality. Can continue writing code but cannot verify it works. Attempted: Verified service URL, checked network connectivity, tried different endpoints, checked status page. Proposed solutions: 1) Wait for service recovery 2) Use staging AuthService if available 3) Contact infrastructure team. Unblocking requirement: AuthService restored to operational status. Progress before block: Authentication module 80% complete, blocked on integration testing." --type alert --priority urgent
 ```
 
 ### Example 3: Technical Impossibility
@@ -297,44 +226,16 @@ curl -X POST "http://localhost:23000/api/messages" \
 **Situation**: Requested feature cannot be implemented as specified.
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "orchestrator-master",
-    "subject": "BLOCKER: TASK-789 - Technical Impossibility in Specification",
-    "priority": "urgent",
-    "content": {
-      "type": "blocker-report",
-      "message": "The specified requirement is technically impossible with the current architecture.",
-      "task_id": "TASK-789",
-      "severity": "critical",
-      "blocker_type": "technical-impossibility",
-      "description": "Task requires real-time synchronous response within 50ms, but the required data source has minimum latency of 200ms. This is a fundamental constraint of the external system that cannot be reduced.",
-      "impact": "Cannot implement the feature as specified. Either the timing requirement or the data source must change.",
-      "attempted_resolutions": [
-        "Researched data source performance limits",
-        "Tested with caching (still exceeds 50ms on cache miss)",
-        "Consulted data source documentation",
-        "Tested connection pooling and optimization"
-      ],
-      "proposed_solutions": [
-        "Relax timing requirement to 250ms",
-        "Use cached/stale data for real-time response",
-        "Change to asynchronous pattern",
-        "Use alternative data source"
-      ],
-      "unblocking_requirements": "Revised specification with achievable timing requirements"
-    }
-  }'
+amp-send orchestrator-master "BLOCKER: TASK-789 - Technical Impossibility in Specification" "The specified requirement is technically impossible with the current architecture. Severity: critical. Blocker type: technical-impossibility. Task requires real-time synchronous response within 50ms, but the required data source has minimum latency of 200ms. This is a fundamental constraint of the external system that cannot be reduced. Impact: Cannot implement the feature as specified. Either the timing requirement or the data source must change. Attempted: Researched data source performance limits, tested with caching (still exceeds 50ms on cache miss), consulted data source documentation, tested connection pooling and optimization. Proposed solutions: 1) Relax timing requirement to 250ms 2) Use cached/stale data for real-time response 3) Change to asynchronous pattern 4) Use alternative data source. Unblocking requirement: Revised specification with achievable timing requirements." --type alert --priority urgent
 ```
 
 ## Error Handling
 
 | Error | Cause | Resolution |
 |-------|-------|------------|
-| `Connection refused` | AI Maestro not running | Start AI Maestro immediately |
+| `AMP status: offline` | AMP service not running | Check `amp-status`, start AI Maestro immediately |
 | `EOA not responding` | EOA session inactive | Escalate to user directly |
-| `Message delivery failed` | Network issue | Retry immediately, max 3 times |
+| `Message delivery failed` | Network issue | Retry `amp-send` immediately, max 3 times |
 
 ### Critical Blocker Protocol
 

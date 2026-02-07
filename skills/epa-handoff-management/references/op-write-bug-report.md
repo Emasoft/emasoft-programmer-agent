@@ -236,18 +236,7 @@ For critical or high severity bugs, notify immediately:
 
 ```bash
 if [ "$SEVERITY" = "critical" ] || [ "$SEVERITY" = "high" ]; then
-    curl -X POST "http://localhost:23000/api/messages" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "to": "eoa-orchestrator-main-agent",
-        "subject": "BUG [$SEVERITY]: $TITLE",
-        "priority": "urgent",
-        "content": {
-          "type": "bug-report",
-          "message": "Critical bug discovered: $TITLE. See $BUG_FILE for details.",
-          "bug_path": "$BUG_FILE"
-        }
-      }'
+    amp-send eoa-orchestrator-main-agent "BUG [$SEVERITY]: $TITLE" "Critical bug discovered: $TITLE. See $BUG_FILE for details." --type bug-report --priority urgent
 fi
 ```
 

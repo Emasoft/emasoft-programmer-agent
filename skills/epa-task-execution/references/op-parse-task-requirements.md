@@ -102,23 +102,7 @@ Create a file impact map:
 If any requirements are unclear, send a clarification request:
 
 ```bash
-curl -X POST "http://localhost:23000/api/messages" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "<ORCHESTRATOR_SESSION>",
-    "subject": "CLARIFY: <TASK_ID> - Ambiguous requirement",
-    "priority": "high",
-    "content": {
-      "type": "clarification",
-      "task_id": "<TASK_ID>",
-      "message": "Need clarification on: <SPECIFIC_QUESTION>",
-      "blocking": true,
-      "questions": [
-        "Question 1 about the requirement",
-        "Question 2 about expected behavior"
-      ]
-    }
-  }'
+amp-send <ORCHESTRATOR_SESSION> "CLARIFY: <TASK_ID> - Ambiguous requirement" "Need clarification on: <SPECIFIC_QUESTION>" --type clarification --priority high
 ```
 
 Do NOT proceed with implementation until clarifications are received if the ambiguity affects core functionality.
