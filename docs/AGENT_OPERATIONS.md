@@ -101,30 +101,24 @@ This loads ONLY the emasoft-programmer-agent plugin into that Claude Code sessio
 ## 4. How EPA is Created
 
 ### ECOS Spawns EPA (via EOA delegation)
-The ECOS (Chief of Staff) agent spawns EPA instances using the `aimaestro-agent.sh` script, typically after EOA requests implementer capacity:
+The ECOS (Chief of Staff) agent spawns EPA instances using the `ai-maestro-agents-management` skill, typically after EOA requests implementer capacity:
 
-```bash
-SESSION_NAME="<project>-programmer-001"
+- **Agent name**: `<project>-programmer-001`
+- **Working directory**: `~/agents/<project>-programmer-001/`
+- **Task**: "Implement feature X for <project>"
+- **Plugin**: load `emasoft-programmer-agent` (must be copied to agent's local plugins directory first)
+- **Main agent**: `epa-programmer-main-agent`
 
-aimaestro-agent.sh create $SESSION_NAME \
-  --dir ~/agents/$SESSION_NAME \
-  --task "Implement feature X for <project>" \
-  -- --dangerously-skip-permissions --chrome --add-dir /tmp \
-  --plugin-dir ~/agents/$SESSION_NAME/.claude/plugins/emasoft-programmer-agent \
-  --agent epa-programmer-main-agent
-```
+**Verify**: confirm the agent appears in the agent list with active status.
 
-### Breakdown
+### Spawn Parameters
 
-| Flag | Value | Purpose |
-|------|-------|---------|
-| `--dir` | `~/agents/$SESSION_NAME` | Sets working directory for the programmer |
-| `--task` | Task description | Initial task prompt (from EOA or ECOS) |
-| `--dangerously-skip-permissions` | - | Skip permission dialogs for automation |
-| `--chrome` | - | Enable Chrome DevTools MCP |
-| `--add-dir` | `/tmp` | Add /tmp as allowed working directory |
-| `--plugin-dir` | `~/agents/$SESSION_NAME/.claude/plugins/emasoft-programmer-agent` | Load EPA plugin |
-| `--agent` | `epa-programmer-main-agent` | Start with this agent from the plugin |
+| Parameter | Value | Purpose |
+|-----------|-------|---------|
+| Working directory | `~/agents/$SESSION_NAME` | Sets working directory for the programmer |
+| Task | Task description | Initial task prompt (from EOA or ECOS) |
+| Plugin | `emasoft-programmer-agent` | Load EPA plugin |
+| Main agent | `epa-programmer-main-agent` | Start with this agent from the plugin |
 
 ### Pre-Spawn Setup
 Before spawning, ECOS must:
@@ -363,13 +357,11 @@ EPA → [Resume Implementation]
 
 ### Session Lifecycle Management
 
-EPA session lifecycle is managed by ECOS (or EOA delegated by ECOS) via `aimaestro-agent.sh`.
+EPA session lifecycle is managed by ECOS (or EOA delegated by ECOS) using the `ai-maestro-agents-management` skill.
 
 ### Wake (Resume Session)
 
-```bash
-aimaestro-agent.sh wake <project>-programmer-<number>
-```
+To wake an EPA agent, use the `ai-maestro-agents-management` skill to wake the agent by session name (e.g., `<project>-programmer-<number>`).
 
 **When to wake**:
 - New task assigned by EOA
@@ -383,9 +375,7 @@ aimaestro-agent.sh wake <project>-programmer-<number>
 
 ### Hibernate (Pause Session)
 
-```bash
-aimaestro-agent.sh hibernate <project>-programmer-<number>
-```
+To hibernate an EPA agent, use the `ai-maestro-agents-management` skill to hibernate the agent by session name.
 
 **When to hibernate**:
 - Task completed, waiting for review
@@ -399,9 +389,7 @@ aimaestro-agent.sh hibernate <project>-programmer-<number>
 
 ### Terminate (End Session)
 
-```bash
-aimaestro-agent.sh terminate <project>-programmer-<number>
-```
+To terminate an EPA agent, use the `ai-maestro-agents-management` skill to terminate the agent by session name.
 
 **When to terminate**:
 - Task completed and PR merged
@@ -479,7 +467,7 @@ This prevents EPA from consuming resources while waiting for review feedback.
 **Cause**: System restart, manual kill, or out-of-memory
 **Solution**:
 1. Check system logs: `journalctl -u tmux`
-2. ECOS recreates session with `aimaestro-agent.sh create`
+2. ECOS recreates session using the `ai-maestro-agents-management` skill
 3. Restore work from `~/agents/<project>-programmer-<number>/work/`
 
 #### Issue: EPA stuck waiting for review
