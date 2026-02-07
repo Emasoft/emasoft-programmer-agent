@@ -227,8 +227,16 @@ Add a reference to the bug in the current handoff:
 
 ```markdown
 ## Bugs Discovered
-- [bug-001](bugs/bug-001.md): IndexError on empty YAML input (severity: medium)
+- bug-001: IndexError on empty YAML input (severity: medium) — see `bugs/bug-001.md`
 ```
+
+The format for each bug entry in the handoff document is:
+
+```
+- <bug-id>: <short title> (severity: <level>) — see `bugs/<bug-id>.md`
+```
+
+This is a plain-text reference to the bug report file created in Step 12. Do not use Markdown links to the bugs directory -- just reference the filename so the reader knows where to look.
 
 ### Step 14: Notify If Critical
 

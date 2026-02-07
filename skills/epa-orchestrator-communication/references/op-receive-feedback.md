@@ -62,6 +62,8 @@ EOA may send different types of feedback:
 
 **Subject Pattern**: `APPROVED: [Task ID]`
 
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "type": "approval",
@@ -77,6 +79,8 @@ EOA may send different types of feedback:
 ### Revision Request
 
 **Subject Pattern**: `REVISION: [Task ID]`
+
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
 
 ```json
 {
@@ -103,6 +107,8 @@ EOA may send different types of feedback:
 
 **Subject Pattern**: `REJECTED: [Task ID]`
 
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "type": "rejection",
@@ -123,6 +129,8 @@ EOA may send different types of feedback:
 
 **Subject Pattern**: `RE: CLARIFICATION: [Task ID]`
 
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "type": "clarification-response",
@@ -142,6 +150,8 @@ EOA may send different types of feedback:
 ### Improvement Decision
 
 **Subject Pattern**: `RE: PROPOSAL: [Task ID]`
+
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
 
 ```json
 {

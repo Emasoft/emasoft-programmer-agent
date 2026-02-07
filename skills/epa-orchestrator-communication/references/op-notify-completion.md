@@ -67,6 +67,8 @@ Before sending completion notification:
 
 Structure your completion notification with these components:
 
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "to": "orchestrator-master",

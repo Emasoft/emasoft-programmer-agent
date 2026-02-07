@@ -1,7 +1,7 @@
 ---
 operation: op-parse-task-requirements
 procedure: proc-execute-task
-workflow-instruction: "Step 17.2 - Parse Task Requirements"
+workflow-step: "Step 17.2 - Parse Task Requirements"
 parent-skill: epa-task-execution
 parent-plugin: emasoft-programmer-agent
 version: 1.0.0
@@ -155,6 +155,9 @@ Task: "Integrate payment gateway"
 - API Dependency: PaymentService - NOT CONFIGURED
 
 **Blocker Message Sent:**
+
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "to": "orchestrator-master",

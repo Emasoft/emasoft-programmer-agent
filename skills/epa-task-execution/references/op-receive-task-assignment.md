@@ -1,7 +1,7 @@
 ---
 operation: op-receive-task-assignment
 procedure: proc-execute-task
-workflow-instruction: "Step 17.1 - Receive Task Assignment"
+workflow-step: "Step 17.1 - Receive Task Assignment"
 parent-skill: epa-task-execution
 parent-plugin: emasoft-programmer-agent
 version: 1.0.0
@@ -21,7 +21,7 @@ Use this operation when:
 ## Prerequisites
 
 Before executing this operation:
-1. AI Maestro service must be running on localhost:23000
+1. AI Maestro service must be running (verify using the `agent-messaging` skill's health check feature)
 2. You must have a valid session name configured
 3. The message must be in the expected JSON format
 
@@ -48,6 +48,9 @@ From the message body, extract:
 | From Agent | `from` field | Orchestrator that assigned the task |
 
 Example message structure:
+
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "from": "orchestrator-master",
@@ -106,6 +109,9 @@ Send an acknowledgment message to the orchestrator using the `agent-messaging` s
 ### Example 1: Valid Task Assignment
 
 Incoming message:
+
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "from": "orchestrator-master",
@@ -125,6 +131,9 @@ Incoming message:
 ```
 
 Response:
+
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "to": "orchestrator-master",
@@ -141,6 +150,9 @@ Response:
 ### Example 2: Invalid Task Assignment
 
 Incoming message missing acceptance criteria:
+
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "from": "orchestrator-master",
@@ -153,6 +165,9 @@ Incoming message missing acceptance criteria:
 ```
 
 Response:
+
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "to": "orchestrator-master",
@@ -174,7 +189,7 @@ Response:
 | No messages in inbox | No tasks assigned yet | Wait for orchestrator assignment |
 | Message missing task_id | Malformed message | Report error, request resubmission |
 | Missing acceptance_criteria | Incomplete task definition | Request criteria from orchestrator |
-| AI Maestro unreachable | Service not running | Verify service at localhost:23000 |
+| AI Maestro unreachable | Service not running | Verify AI Maestro connectivity using the `agent-messaging` skill |
 
 ## Related Operations
 

@@ -53,6 +53,8 @@ Before sending a status update:
 
 Structure your status update with these components:
 
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "to": "orchestrator-master",

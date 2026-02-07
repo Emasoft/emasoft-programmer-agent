@@ -1,7 +1,7 @@
 ---
 operation: op-validate-acceptance-criteria
 procedure: proc-execute-task
-workflow-instruction: "Step 17.6 - Validate Acceptance Criteria"
+workflow-step: "Step 17.6 - Validate Acceptance Criteria"
 parent-skill: epa-task-execution
 parent-plugin: emasoft-programmer-agent
 version: 1.0.0
@@ -143,6 +143,9 @@ Task: "Add email validation to user form"
 | AC-003 | Form submits with valid email | PASSED | Integration test passed |
 
 Completion message sent:
+
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "to": "orchestrator-master",

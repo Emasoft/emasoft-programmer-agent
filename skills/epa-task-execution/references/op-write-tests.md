@@ -1,7 +1,7 @@
 ---
 operation: op-write-tests
 procedure: proc-execute-task
-workflow-instruction: "Step 17.5 - Write Tests"
+workflow-step: "Step 17.5 - Write Tests"
 parent-skill: epa-task-execution
 parent-plugin: emasoft-programmer-agent
 version: 1.0.0

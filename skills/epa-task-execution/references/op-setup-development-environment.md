@@ -1,7 +1,7 @@
 ---
 operation: op-setup-development-environment
 procedure: proc-execute-task
-workflow-instruction: "Step 17.3 - Setup Development Environment"
+workflow-step: "Step 17.3 - Setup Development Environment"
 parent-skill: epa-task-execution
 parent-plugin: emasoft-programmer-agent
 version: 1.0.0

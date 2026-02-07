@@ -154,6 +154,4 @@ uv run python scripts/epa_validate_plugin.py --verbose
 
 ## See Also
 
-- [Emasoft Orchestrator Agent](../emasoft-orchestrator-agent/README.md) - Task distribution and coordination
-- [Emasoft Integrator Agent](../emasoft-integrator-agent/README.md) - Quality gates and code review
-- [Emasoft Architect Agent](../emasoft-architect-agent/README.md) - Design and planning
+> **Related Plugins**: This agent works with the Emasoft Orchestrator Agent (EOA), Emasoft Integrator Agent (EIA), and Emasoft Architect Agent (EAA). Each agent plugin is installed independently.

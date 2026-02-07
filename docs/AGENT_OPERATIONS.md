@@ -483,13 +483,15 @@ This prevents EPA from consuming resources while waiting for review feedback.
 ## 10. References
 
 ### Related Documentation
-- [EOA_AGENT_OPERATIONS.md](../../emasoft-orchestrator-agent/docs/AGENT_OPERATIONS.md) - Orchestrator operations
-- [EIA_AGENT_OPERATIONS.md](../../emasoft-integrator-agent/docs/AGENT_OPERATIONS.md) - Integrator operations
-- [ECOS_AGENT_OPERATIONS.md](../../emasoft-chief-of-staff/docs/AGENT_OPERATIONS.md) - Chief of Staff operations
-- [EAA_AGENT_OPERATIONS.md](../../emasoft-architect-agent/docs/AGENT_OPERATIONS.md) - Architect operations
+
+> **Cross-Plugin References**: The following plugins are part of the Emasoft Agent Ecosystem. Each is installed independently and communicates via the `agent-messaging` skill:
+> - EOA (Orchestrator) - Task distribution and delegation
+> - EIA (Integrator) - Code review and quality gates
+> - ECOS (Chief of Staff) - Agent lifecycle coordination
+> - EAA (Architect) - Architecture design and planning
+> - `agent-messaging` skill - Provided by the AI Maestro messaging system
 
 ### External References
-- [Agent Messaging Skill](~/.claude/skills/agent-messaging/SKILL.md) - Inter-agent messaging instructions
 - [Claude Code Plugin System](https://docs.anthropic.com/claude/docs/plugins)
 - [SERENA MCP Documentation](https://github.com/Emasoft/serena-mcp)
 - [GitHub Pull Requests API](https://docs.github.com/en/rest/pulls)

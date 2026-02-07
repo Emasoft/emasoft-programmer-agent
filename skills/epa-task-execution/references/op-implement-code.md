@@ -1,7 +1,7 @@
 ---
 operation: op-implement-code
 procedure: proc-execute-task
-workflow-instruction: "Step 17.4 - Implement Code"
+workflow-step: "Step 17.4 - Implement Code"
 parent-skill: epa-task-execution
 parent-plugin: emasoft-programmer-agent
 version: 1.0.0

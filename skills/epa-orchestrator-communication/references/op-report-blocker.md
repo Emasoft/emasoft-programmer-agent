@@ -61,6 +61,8 @@ Before reporting a blocker:
 
 Structure your blocker report with these components:
 
+> **Note**: The structure below shows the conceptual message content. Use the `agent-messaging` skill to send messages - it handles the exact API format automatically.
+
 ```json
 {
   "to": "orchestrator-master",
@@ -163,8 +165,9 @@ Follow these steps to report a blocker:
 6. **Propose solutions**: Think of possible resolutions
 7. **Compose message**: Use the format from section 3.2
 8. **Send with urgent priority**: Send the blocker report using the `agent-messaging` skill with urgent priority
-9. **Wait for response**: Check your inbox using the `agent-messaging` skill for EOA reply
-10. **Continue if possible**: Work on unblocked items if any exist
+9. **Verify**: confirm message delivery via the `agent-messaging` skill's sent messages feature
+10. **Wait for response**: Check your inbox using the `agent-messaging` skill for EOA reply
+11. **Continue if possible**: Work on unblocked items if any exist
 
 ## Checklist
 
