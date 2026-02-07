@@ -162,8 +162,8 @@ Follow these steps to report a blocker:
 5. **Identify blocker type**: Use standardized types
 6. **Propose solutions**: Think of possible resolutions
 7. **Compose message**: Use the format from section 3.2
-8. **Send with urgent priority**: Execute `amp-send` with `--priority urgent`
-9. **Wait for response**: Monitor inbox for EOA reply
+8. **Send with urgent priority**: Send the blocker report using the `agent-messaging` skill with urgent priority
+9. **Wait for response**: Check your inbox using the `agent-messaging` skill for EOA reply
 10. **Continue if possible**: Work on unblocked items if any exist
 
 ## Checklist
@@ -199,9 +199,14 @@ Use this checklist before reporting a blocker:
 
 ### Escalation Message
 
-```bash
-amp-send orchestrator-master "ESCALATION: BLOCKER: TASK-123 - [Description]" "ESCALATION: Original blocker report sent [time ago], no response received. Task remains blocked. Severity: critical. Escalation level: 1. Please acknowledge and provide resolution path." --type alert --priority urgent
-```
+Send an escalation message to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "ESCALATION: BLOCKER: [TASK_ID] - [Description]"
+- **Content**: describe that this is an escalation of a previously sent blocker report, how long ago the original was sent, that the task remains blocked, the severity level, and the escalation level. Request acknowledgment and a resolution path.
+- **Type**: alert
+- **Priority**: urgent
+
+**Verify**: confirm the escalation message was delivered.
 
 ## 3.5 Examples
 
@@ -209,33 +214,48 @@ amp-send orchestrator-master "ESCALATION: BLOCKER: TASK-123 - [Description]" "ES
 
 **Situation**: Cannot access external API due to missing credentials.
 
-```bash
-amp-send orchestrator-master "BLOCKER: TASK-123 - Missing PaymentGateway API Credentials" "Cannot proceed with PaymentGateway integration - API credentials not found. Severity: critical. Blocker type: missing-credentials. The task requires integration with PaymentGateway API. I searched the codebase, environment variables, and secrets store but found no credentials. API returns 401 Unauthorized. Impact: Cannot implement, test, or verify any API integration functionality. Task is 100% blocked. Attempted: Searched .env files, checked secrets manager, searched codebase, checked project docs. Proposed solutions: 1) Provide API credentials via secrets manager 2) Provide test/sandbox credentials 3) Grant access to credentials documentation. Unblocking requirement: PaymentGateway API key and secret. Progress before block: Unit tests written with mocks, local logic implemented, ready for real integration." --type alert --priority urgent
-```
+Send a blocker report to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "BLOCKER: TASK-123 - Missing PaymentGateway API Credentials"
+- **Content**: "Cannot proceed with PaymentGateway integration - API credentials not found. Severity: critical. Blocker type: missing-credentials. The task requires integration with PaymentGateway API. I searched the codebase, environment variables, and secrets store but found no credentials. API returns 401 Unauthorized. Impact: Cannot implement, test, or verify any API integration functionality. Task is 100% blocked. Attempted: Searched .env files, checked secrets manager, searched codebase, checked project docs. Proposed solutions: 1) Provide API credentials via secrets manager 2) Provide test/sandbox credentials 3) Grant access to credentials documentation. Unblocking requirement: PaymentGateway API key and secret. Progress before block: Unit tests written with mocks, local logic implemented, ready for real integration."
+- **Type**: alert
+- **Priority**: urgent
+
+**Verify**: confirm the blocker report was delivered.
 
 ### Example 2: External Service Down
 
 **Situation**: Required external service is unavailable.
 
-```bash
-amp-send orchestrator-master "BLOCKER: TASK-456 - AuthService Down" "AuthService is returning 503 errors. Cannot test authentication flow. Severity: high. Blocker type: external-dependency. The AuthService at auth.internal.example.com returns 503 Service Unavailable. Checked service status page - no reported outages. Issue started approximately 30 minutes ago. Impact: Cannot test any authentication functionality. Can continue writing code but cannot verify it works. Attempted: Verified service URL, checked network connectivity, tried different endpoints, checked status page. Proposed solutions: 1) Wait for service recovery 2) Use staging AuthService if available 3) Contact infrastructure team. Unblocking requirement: AuthService restored to operational status. Progress before block: Authentication module 80% complete, blocked on integration testing." --type alert --priority urgent
-```
+Send a blocker report to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "BLOCKER: TASK-456 - AuthService Down"
+- **Content**: "AuthService is returning 503 errors. Cannot test authentication flow. Severity: high. Blocker type: external-dependency. The AuthService at auth.internal.example.com returns 503 Service Unavailable. Checked service status page - no reported outages. Issue started approximately 30 minutes ago. Impact: Cannot test any authentication functionality. Can continue writing code but cannot verify it works. Attempted: Verified service URL, checked network connectivity, tried different endpoints, checked status page. Proposed solutions: 1) Wait for service recovery 2) Use staging AuthService if available 3) Contact infrastructure team. Unblocking requirement: AuthService restored to operational status. Progress before block: Authentication module 80% complete, blocked on integration testing."
+- **Type**: alert
+- **Priority**: urgent
+
+**Verify**: confirm the blocker report was delivered.
 
 ### Example 3: Technical Impossibility
 
 **Situation**: Requested feature cannot be implemented as specified.
 
-```bash
-amp-send orchestrator-master "BLOCKER: TASK-789 - Technical Impossibility in Specification" "The specified requirement is technically impossible with the current architecture. Severity: critical. Blocker type: technical-impossibility. Task requires real-time synchronous response within 50ms, but the required data source has minimum latency of 200ms. This is a fundamental constraint of the external system that cannot be reduced. Impact: Cannot implement the feature as specified. Either the timing requirement or the data source must change. Attempted: Researched data source performance limits, tested with caching (still exceeds 50ms on cache miss), consulted data source documentation, tested connection pooling and optimization. Proposed solutions: 1) Relax timing requirement to 250ms 2) Use cached/stale data for real-time response 3) Change to asynchronous pattern 4) Use alternative data source. Unblocking requirement: Revised specification with achievable timing requirements." --type alert --priority urgent
-```
+Send a blocker report to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "BLOCKER: TASK-789 - Technical Impossibility in Specification"
+- **Content**: "The specified requirement is technically impossible with the current architecture. Severity: critical. Blocker type: technical-impossibility. Task requires real-time synchronous response within 50ms, but the required data source has minimum latency of 200ms. This is a fundamental constraint of the external system that cannot be reduced. Impact: Cannot implement the feature as specified. Either the timing requirement or the data source must change. Attempted: Researched data source performance limits, tested with caching (still exceeds 50ms on cache miss), consulted data source documentation, tested connection pooling and optimization. Proposed solutions: 1) Relax timing requirement to 250ms 2) Use cached/stale data for real-time response 3) Change to asynchronous pattern 4) Use alternative data source. Unblocking requirement: Revised specification with achievable timing requirements."
+- **Type**: alert
+- **Priority**: urgent
+
+**Verify**: confirm the blocker report was delivered.
 
 ## Error Handling
 
 | Error | Cause | Resolution |
 |-------|-------|------------|
-| `AMP status: offline` | AMP service not running | Check `amp-status`, start AI Maestro immediately |
-| `EOA not responding` | EOA session inactive | Escalate to user directly |
-| `Message delivery failed` | Network issue | Retry `amp-send` immediately, max 3 times |
+| Messaging service offline | Messaging service not running | Use the `agent-messaging` skill's status check, start AI Maestro immediately |
+| EOA not responding | EOA session inactive | Escalate to user directly |
+| Message delivery failed | Network issue | Retry the send operation immediately using the `agent-messaging` skill, max 3 times |
 
 ### Critical Blocker Protocol
 

@@ -213,8 +213,8 @@ Follow these steps to notify completion:
 4. **Create PR (if applicable)**: Open pull request
 5. **Self-review**: Review your own changes one more time
 6. **Compose notification**: Use the format from section 5.2
-7. **Send to EOA**: Execute the `amp-send` command
-8. **Wait for feedback**: Monitor for EOA response
+7. **Send to EOA**: Send the completion notification using the `agent-messaging` skill
+8. **Wait for feedback**: Check your inbox using the `agent-messaging` skill for EOA response
 
 ## Checklist
 
@@ -237,11 +237,14 @@ Use this checklist before sending completion notification:
 
 ## 5.4 Sending Notification
 
-Execute this command to send the completion notification:
+Send the completion notification to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "COMPLETE: [TASK_ID] - [Brief Description]"
+- **Content**: include the completion summary following the format from section 5.2 (branch, commits, files changed, test results, coverage, documentation updated, PR URL, implementation notes, known limitations, testing notes)
+- **Type**: notification
+- **Priority**: high
 
-```bash
-amp-send orchestrator-master "COMPLETE: TASK-123 - User Authentication Module" "User authentication module implementation complete. All tests passing, PR ready for review. Branch: feature/TASK-123-user-auth (5 commits, 8 files changed, +342/-45 lines). Tests: 24/24 passing, 92% coverage. Docs updated: docs/api/auth.md. PR: https://github.com/org/repo/pull/456 - feat(auth): Add user authentication module. Implementation notes: Used JWT tokens with 24-hour expiry as specified, implemented refresh token rotation for security. Known limitations: Rate limiting not implemented (out of scope). Testing: uv run pytest tests/unit/test_auth.py -v" --type notification --priority high
-```
+**Verify**: confirm the completion notification appears in your sent messages.
 
 ## 5.5 Examples
 
@@ -249,38 +252,56 @@ amp-send orchestrator-master "COMPLETE: TASK-123 - User Authentication Module" "
 
 **Situation**: New feature fully implemented with tests.
 
-```bash
-amp-send orchestrator-master "COMPLETE: TASK-456 - Order Processing Pipeline" "Order processing pipeline implementation complete with full test coverage. Branch: feature/TASK-456-order-pipeline (8 commits, 12 files changed, +567/-23 lines). Tests: 35/35 passing, 94% coverage. Docs updated: docs/architecture/order-pipeline.md, docs/api/orders.md. PR: https://github.com/org/repo/pull/789 - feat(orders): Add order processing pipeline. Implementation notes: Implemented async pipeline with retry logic, orders processed in batches of 100 for efficiency. Testing: uv run pytest tests/ -v or manually: uv run python scripts/test_order_pipeline.py" --type notification --priority high
-```
+Send a completion notification to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "COMPLETE: TASK-456 - Order Processing Pipeline"
+- **Content**: "Order processing pipeline implementation complete with full test coverage. Branch: feature/TASK-456-order-pipeline (8 commits, 12 files changed, +567/-23 lines). Tests: 35/35 passing, 94% coverage. Docs updated: docs/architecture/order-pipeline.md, docs/api/orders.md. PR: https://github.com/org/repo/pull/789 - feat(orders): Add order processing pipeline. Implementation notes: Implemented async pipeline with retry logic, orders processed in batches of 100 for efficiency. Testing: uv run pytest tests/ -v or manually: uv run python scripts/test_order_pipeline.py"
+- **Type**: notification
+- **Priority**: high
+
+**Verify**: confirm the completion notification was delivered.
 
 ### Example 2: Bug Fix Complete
 
 **Situation**: Bug fix implemented and verified.
 
-```bash
-amp-send orchestrator-master "COMPLETE: TASK-789 - Fix Race Condition in Cache Update" "Race condition in cache update fixed. Added mutex lock and regression tests. Branch: fix/TASK-789-cache-race-condition (3 commits, 2 files changed, +45/-12 lines). Tests: 8/8 passing, 100% coverage. PR: https://github.com/org/repo/pull/101 - fix(cache): Add mutex lock to prevent race condition. Implementation notes: Added threading.Lock() around cache write operations, verified fix under concurrent load testing. Testing: uv run pytest tests/unit/test_cache.py::test_concurrent_updates -v --count=100" --type notification --priority high
-```
+Send a completion notification to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "COMPLETE: TASK-789 - Fix Race Condition in Cache Update"
+- **Content**: "Race condition in cache update fixed. Added mutex lock and regression tests. Branch: fix/TASK-789-cache-race-condition (3 commits, 2 files changed, +45/-12 lines). Tests: 8/8 passing, 100% coverage. PR: https://github.com/org/repo/pull/101 - fix(cache): Add mutex lock to prevent race condition. Implementation notes: Added threading.Lock() around cache write operations, verified fix under concurrent load testing. Testing: uv run pytest tests/unit/test_cache.py::test_concurrent_updates -v --count=100"
+- **Type**: notification
+- **Priority**: high
+
+**Verify**: confirm the completion notification was delivered.
 
 ### Example 3: Refactoring Complete
 
 **Situation**: Refactoring task completed.
 
-```bash
-amp-send orchestrator-master "COMPLETE: TASK-101 - Refactor Payment Module" "Payment module refactored. Reduced complexity, improved testability. Branch: refactor/TASK-101-payment-module (6 commits, 5 files changed, +234/-312 lines). Tests: 28/28 passing, 96% coverage. Docs updated: docs/architecture/payment-module.md. PR: https://github.com/org/repo/pull/202 - refactor(payment): Simplify payment processing module. Implementation notes: Split monolithic PaymentProcessor into PaymentValidator, PaymentExecutor, and PaymentNotifier. Reduced cyclomatic complexity from 32 to 8. Testing: All existing tests pass, new unit tests added for each extracted class." --type notification --priority high
-```
+Send a completion notification to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "COMPLETE: TASK-101 - Refactor Payment Module"
+- **Content**: "Payment module refactored. Reduced complexity, improved testability. Branch: refactor/TASK-101-payment-module (6 commits, 5 files changed, +234/-312 lines). Tests: 28/28 passing, 96% coverage. Docs updated: docs/architecture/payment-module.md. PR: https://github.com/org/repo/pull/202 - refactor(payment): Simplify payment processing module. Implementation notes: Split monolithic PaymentProcessor into PaymentValidator, PaymentExecutor, and PaymentNotifier. Reduced cyclomatic complexity from 32 to 8. Testing: All existing tests pass, new unit tests added for each extracted class."
+- **Type**: notification
+- **Priority**: high
+
+**Verify**: confirm the completion notification was delivered.
 
 ## Error Handling
 
 | Error | Cause | Resolution |
 |-------|-------|------------|
-| `AMP status: offline` | AMP service not running | Check `amp-status`, start AI Maestro service |
-| `Message delivery failed` | Network issue | Retry `amp-send` up to 3 times |
+| Messaging service offline | Messaging service not running | Use the `agent-messaging` skill's status check, start AI Maestro service |
+| Message delivery failed | Network issue | Retry the send operation up to 3 times using the `agent-messaging` skill |
 | `Tests failing after notification` | Regression introduced | Send correction notification |
 
 ### Post-Notification Issues
 
-If you discover an issue after sending completion notification:
+If you discover an issue after sending completion notification, send a correction to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "CORRECTION: [TASK_ID] - Issue Found After Completion"
+- **Content**: describe the issue found, explain what you are doing to fix it, and provide a revised completion estimate
+- **Type**: status
+- **Priority**: high
 
-```bash
-amp-send orchestrator-master "CORRECTION: TASK-123 - Issue Found After Completion" "CORRECTION to previous completion notification. Issue found and being addressed. Issue: [Description of issue]. Action: [What you are doing to fix it]. Revised estimate: [New estimate]." --type status --priority high
-```
+**Verify**: confirm the correction message was delivered.

@@ -99,11 +99,14 @@ Create a file impact map:
 
 ### Step 2.4: Clarify Ambiguities with Orchestrator
 
-If any requirements are unclear, send a clarification request:
+If any requirements are unclear, send a clarification request to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent session
+- **Subject**: "CLARIFY: [TASK_ID] - Ambiguous requirement"
+- **Content**: describe what is unclear and list specific questions that need answering
+- **Type**: clarification
+- **Priority**: high
 
-```bash
-amp-send <ORCHESTRATOR_SESSION> "CLARIFY: <TASK_ID> - Ambiguous requirement" "Need clarification on: <SPECIFIC_QUESTION>" --type clarification --priority high
-```
+**Verify**: confirm the clarification request appears in your sent messages.
 
 Do NOT proceed with implementation until clarifications are received if the ambiguity affects core functionality.
 

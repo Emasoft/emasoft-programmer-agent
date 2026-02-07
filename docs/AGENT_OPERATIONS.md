@@ -21,12 +21,12 @@
 - **Project**: Use kebab-case project identifier (must match project name)
 - **Type**: Always use `programmer` (identifies role)
 - **Number**: Zero-padded 3-digit sequence (001, 002, 003, ...)
-- **AMP Identity**: Session name = AMP identity for messaging (set via `amp-init --auto`)
+- **Messaging Identity**: Session name = messaging identity (initialized via the `agent-messaging` skill)
 - **Chosen By**: ECOS (Chief of Staff) when spawning the programmer
 - **NO `epa-` prefix**: Unlike EOA/ECOS/EIA/EAMA, EPA sessions use project-based naming
 
 ### Why This Matters
-The session name is used as the AMP identity and becomes the messaging address for inter-agent communication. The `<project>-programmer-<number>` format allows multiple programmer agents to work on the same project without name collisions.
+The session name is used as your messaging identity and becomes the messaging address for inter-agent communication. The `<project>-programmer-<number>` format allows multiple programmer agents to work on the same project without name collisions.
 
 ### Sequential Assignment
 ECOS maintains a counter for each project to ensure unique numbering:
@@ -129,7 +129,7 @@ aimaestro-agent.sh create $SESSION_NAME \
 ### Pre-Spawn Setup
 Before spawning, ECOS must:
 1. Copy the plugin to `~/agents/$SESSION_NAME/.claude/plugins/emasoft-programmer-agent/`
-2. Initialize AMP identity for the session (`amp-init --auto`)
+2. Initialize messaging identity for the session (using the `agent-messaging` skill)
 3. Create initial task description (from EOA task breakdown)
 4. Set up working directories
 5. Clone project repository into `work/` directory
@@ -180,68 +180,77 @@ EPA uses the globally configured **SERENA MCP** for code navigation and analysis
 **SERENA is NOT part of the EPA plugin** - it's a globally installed MCP server.
 
 ### Cross-Role Communication
-All cross-role communication happens via **AMP (Agent Messaging Protocol) messages**, not skill sharing.
+All cross-role communication happens via **inter-agent messages** sent through the `agent-messaging` skill, not skill sharing.
 
 **Example**:
 ```
 EPA encounters architectural question
-→ EPA sends blocker message to EOA (amp-send eoa-... "BLOCKER: ..." "..." --type alert)
+→ EPA sends a blocker message to EOA using the `agent-messaging` skill
+  (Recipient: orchestrator, Subject: "BLOCKER: ...", Type: alert, Priority: urgent)
 → EOA escalates to ECOS
 → ECOS delegates to EAA
 → EAA responds with architectural guidance
 → ECOS forwards to EOA
 → EOA forwards to EPA
-→ EPA reads via amp-inbox, resumes implementation
+→ EPA checks inbox using the `agent-messaging` skill, reads the response, resumes implementation
 ```
 
 ---
 
-## 6. AMP (Agent Messaging Protocol) Communication
+## 6. Inter-Agent Messaging
 
-### AMP Identity Setup
+All inter-agent communication uses the globally installed `agent-messaging` skill. Read that skill first to learn the current commands and syntax. Never hardcode command names -- always consult the skill at runtime.
 
-Before sending any messages, verify your AMP identity is initialized:
+### Messaging Identity Setup
 
-```bash
-# Check current identity
-cat ~/.agent-messaging/IDENTITY.md
+Before sending any messages, verify your messaging identity is initialized. Read the `agent-messaging` skill and follow its initialization instructions.
 
-# Initialize identity if not set up
-amp-init --auto
-```
+**Verify**: Confirm your identity file exists and contains your session name.
 
 ### Sending Messages from EPA
 
 #### To EOA (Orchestrator)
-```bash
-amp-send eoa-svgbbox-orchestrator "Task Completed: calculateBBox() implementation" "Implemented calculateBBox() with unit tests. PR #43 created. See report at ~/agents/svgbbox-programmer-001/reports/task-complete-2026-02-06.md" --type notification
-```
+
+Send a message to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "Task Completed: [description]"
+- **Content**: describe what was implemented, reference the PR number, and point to the completion report file path
+- **Type**: notification
+- **Priority**: normal
+
+**Verify**: confirm the message appears in your sent messages.
 
 #### To ECOS (Chief of Staff) - For Blockers Only
-```bash
-amp-send ecos-chief-of-staff-one "BLOCKER: API dependency unavailable" "Cannot implement calculateBBox() - dependency on external API not available. See blocker report at ~/agents/svgbbox-programmer-001/reports/blocker-2026-02-06.md" --type alert --priority urgent
-```
+
+Send a message to the chief of staff using the `agent-messaging` skill:
+- **Recipient**: the ECOS agent session
+- **Subject**: "BLOCKER: [brief description]"
+- **Content**: describe the blocker, its impact, and point to the blocker report file path
+- **Type**: alert
+- **Priority**: urgent
+
+**Verify**: confirm the message was delivered successfully.
 
 #### To EIA (Integrator) - For Review Requests
-```bash
-amp-send eia-integrator-one "Review Request: PR #43" "PR #43 ready for review. Implements calculateBBox() with 15 unit tests. All tests passing." --type request --priority high
-```
+
+Send a message to the integrator using the `agent-messaging` skill:
+- **Recipient**: the EIA agent session
+- **Subject**: "Review Request: PR #[number]"
+- **Content**: describe what the PR implements, how many tests pass, and that it is ready for review
+- **Type**: request
+- **Priority**: high
+
+**Verify**: confirm the message appears in your sent messages.
 
 ### Reading Messages (EPA Inbox)
 
-```bash
-# Check inbox for unread messages
-amp-inbox
+Check your inbox using the `agent-messaging` skill. Process all unread messages before proceeding with any work.
 
-# Read a specific message
-amp-read <message-id>
+To read a specific message, use the `agent-messaging` skill to view its full content by message ID.
 
-# Reply to a message
-amp-reply <message-id> "Your reply text here"
+To reply to a message, use the `agent-messaging` skill to send a reply referencing the original message.
 
-# Check AMP status
-amp-status
-```
+To check messaging service status, use the `agent-messaging` skill's status check operation.
 
 ### Message Priority Levels
 
@@ -272,7 +281,7 @@ amp-status
 ### Core Responsibilities
 
 #### 1. Receive Tasks from EOA
-- EOA sends task assignment via AMP message
+- EOA sends task assignment via the `agent-messaging` skill
 - EPA acknowledges receipt
 - EPA validates task clarity and completeness
 - EPA requests clarification if task is ambiguous
@@ -300,7 +309,7 @@ amp-status
 - Create PR when task implementation complete
 - PR title: `[Project] Feature/Fix: Brief description`
 - PR body: Include task reference, test results, implementation notes
-- Request review from EIA via AMP message (`amp-send`)
+- Request review from EIA using the `agent-messaging` skill
 - **EPA does NOT merge PRs** - only EIA can merge
 
 #### 6. Update Task Status
@@ -369,7 +378,7 @@ aimaestro-agent.sh wake <project>-programmer-<number>
 
 **What happens**:
 - Tmux session brought to foreground
-- EPA checks AMP inbox (`amp-inbox`)
+- EPA checks inbox using the `agent-messaging` skill
 - EPA resumes implementation work
 
 ### Hibernate (Pause Session)
@@ -386,7 +395,7 @@ aimaestro-agent.sh hibernate <project>-programmer-<number>
 **What happens**:
 - Tmux session detached (keeps running in background)
 - EPA continues monitoring via hooks
-- EPA can still receive AMP messages
+- EPA can still receive messages via the `agent-messaging` skill
 
 ### Terminate (End Session)
 
@@ -403,7 +412,7 @@ aimaestro-agent.sh terminate <project>-programmer-<number>
 **What happens**:
 - Tmux session killed
 - EPA sends final completion report to EOA
-- AMP identity deregistered
+- Messaging identity deregistered
 - Working directory preserved at `~/agents/<project>-programmer-<number>/`
 
 ### Auto-Hibernate Feature
@@ -427,12 +436,12 @@ This prevents EPA from consuming resources while waiting for review feedback.
 #### Issue: EPA cannot access EOA skills
 **Symptom**: `Skill 'eoa-orchestration-patterns' not found`
 **Cause**: Plugin mutual exclusivity - EPA doesn't have EOA plugin loaded
-**Solution**: Use AMP messaging (`amp-send`) to request EOA assistance
+**Solution**: Use the `agent-messaging` skill to send a message requesting EOA assistance
 
-#### Issue: AMP message not received
+#### Issue: Message not received by recipient
 **Symptom**: EOA didn't get task completion notification
-**Cause**: Wrong recipient name or AMP identity not initialized
-**Solution**: Verify AMP identity with `cat ~/.agent-messaging/IDENTITY.md`, check recipient name, run `amp-status` to verify connectivity
+**Cause**: Wrong recipient name or messaging identity not initialized
+**Solution**: Verify your messaging identity is initialized using the `agent-messaging` skill, check that the recipient name is correct, and use the skill's status check to verify connectivity
 
 #### Issue: SERENA MCP not available
 **Symptom**: `SERENA MCP server not found` or symbol search fails
@@ -492,7 +501,7 @@ This prevents EPA from consuming resources while waiting for review feedback.
 - [EAA_AGENT_OPERATIONS.md](../../emasoft-architect-agent/docs/AGENT_OPERATIONS.md) - Architect operations
 
 ### External References
-- [AMP (Agent Messaging Protocol) Documentation](https://github.com/Emasoft/ai-maestro/blob/main/docs/AMP.md)
+- [Agent Messaging Skill](~/.claude/skills/agent-messaging/SKILL.md) - Inter-agent messaging instructions
 - [Claude Code Plugin System](https://docs.anthropic.com/claude/docs/plugins)
 - [SERENA MCP Documentation](https://github.com/Emasoft/serena-mcp)
 - [GitHub Pull Requests API](https://docs.github.com/en/rest/pulls)

@@ -194,7 +194,7 @@ Follow these steps to propose an improvement:
 4. **Consider alternatives**: Evaluate other approaches
 5. **Estimate effort**: Calculate implementation time
 6. **Compose proposal**: Use the format from section 4.2
-7. **Send to EOA**: Execute the `amp-send` command
+7. **Send to EOA**: Send the proposal using the `agent-messaging` skill
 8. **Wait for response**: Do not implement until approved (unless auto-proceed)
 9. **Implement if approved**: Proceed with the improvement
 10. **Document the change**: Note the improvement in commit message
@@ -256,25 +256,40 @@ When EOA responds:
 
 **Situation**: Found a more efficient algorithm.
 
-```bash
-amp-send orchestrator-master "PROPOSAL: TASK-123 - Use Binary Search Instead of Linear Search" "Proposing to use binary search instead of linear search for order lookup. Current approach: linear search O(n). Proposed: binary search O(log n) on already-sorted order list. Benefits: For 100,000 orders reduces from 100,000 to 17 comparisons, no additional memory. Risk: Requires sorted list - already guaranteed by existing code. Effort: 30 minutes. Timeline impact: none. Alternative considered: Hash table lookup (rejected - additional memory not justified). Approval required: yes, will auto-proceed after 30 minutes if no objection." --type request
-```
+Send a proposal to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "PROPOSAL: TASK-123 - Use Binary Search Instead of Linear Search"
+- **Content**: "Proposing to use binary search instead of linear search for order lookup. Current approach: linear search O(n). Proposed: binary search O(log n) on already-sorted order list. Benefits: For 100,000 orders reduces from 100,000 to 17 comparisons, no additional memory. Risk: Requires sorted list - already guaranteed by existing code. Effort: 30 minutes. Timeline impact: none. Alternative considered: Hash table lookup (rejected - additional memory not justified). Approval required: yes, will auto-proceed after 30 minutes if no objection."
+- **Type**: request
+- **Priority**: normal
+
+**Verify**: confirm the proposal appears in your sent messages.
 
 ### Example 2: Code Reuse Opportunity
 
 **Situation**: Found existing code that can be reused.
 
-```bash
-amp-send orchestrator-master "PROPOSAL: TASK-456 - Reuse Existing Validation Module" "Proposing to reuse existing InputValidator instead of writing new validation logic. Current approach: implement input validation from scratch. Proposed: reuse InputValidator from src/utils/validation.py (already handles all required types, well-tested at 95% coverage). Benefits: Saves 2 hours, leverages tested code, maintains consistency. Code lines: ~200 -> 10. Risk: none. Effort: 15 minutes. Timeline impact: saves 1.75 hours. Approval required: yes, will auto-proceed after 30 minutes if no objection." --type request
-```
+Send a proposal to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "PROPOSAL: TASK-456 - Reuse Existing Validation Module"
+- **Content**: "Proposing to reuse existing InputValidator instead of writing new validation logic. Current approach: implement input validation from scratch. Proposed: reuse InputValidator from src/utils/validation.py (already handles all required types, well-tested at 95% coverage). Benefits: Saves 2 hours, leverages tested code, maintains consistency. Code lines: ~200 -> 10. Risk: none. Effort: 15 minutes. Timeline impact: saves 1.75 hours. Approval required: yes, will auto-proceed after 30 minutes if no objection."
+- **Type**: request
+- **Priority**: normal
+
+**Verify**: confirm the proposal was delivered.
 
 ### Example 3: Security Enhancement
 
 **Situation**: Identified security improvement opportunity.
 
-```bash
-amp-send orchestrator-master "PROPOSAL: TASK-789 - Add Input Sanitization for SQL Queries" "Proposing to add parameterized queries to prevent SQL injection. Current approach: string concatenation for SQL query building. Proposed: use parameterized queries with database library built-in escaping. Benefits: Prevents SQL injection (industry standard), no performance overhead. Security risk: high -> eliminated. Effort: 45 minutes. Timeline impact: adds 45 minutes but strongly recommended. Approval required: yes, will NOT auto-proceed." --type request --priority high
-```
+Send a proposal to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "PROPOSAL: TASK-789 - Add Input Sanitization for SQL Queries"
+- **Content**: "Proposing to add parameterized queries to prevent SQL injection. Current approach: string concatenation for SQL query building. Proposed: use parameterized queries with database library built-in escaping. Benefits: Prevents SQL injection (industry standard), no performance overhead. Security risk: high -> eliminated. Effort: 45 minutes. Timeline impact: adds 45 minutes but strongly recommended. Approval required: yes, will NOT auto-proceed."
+- **Type**: request
+- **Priority**: high
+
+**Verify**: confirm the proposal was delivered.
 
 ## Error Handling
 

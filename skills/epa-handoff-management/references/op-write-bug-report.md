@@ -232,13 +232,16 @@ Add a reference to the bug in the current handoff:
 
 ### Step 14: Notify If Critical
 
-For critical or high severity bugs, notify immediately:
+For critical or high severity bugs, notify the orchestrator immediately using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "BUG [severity]: [bug title]"
+- **Content**: describe that a critical/high bug was discovered, provide the bug title, and reference the bug report file path for details
+- **Type**: bug-report
+- **Priority**: urgent
 
-```bash
-if [ "$SEVERITY" = "critical" ] || [ "$SEVERITY" = "high" ]; then
-    amp-send eoa-orchestrator-main-agent "BUG [$SEVERITY]: $TITLE" "Critical bug discovered: $TITLE. See $BUG_FILE for details." --type bug-report --priority urgent
-fi
-```
+**Verify**: confirm the bug notification was delivered.
+
+Only send this notification for critical or high severity bugs. Medium and low severity bugs are documented in the handoff but do not require immediate notification.
 
 ## Checklist
 

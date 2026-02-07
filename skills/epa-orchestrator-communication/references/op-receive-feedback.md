@@ -25,17 +25,9 @@ After sending a completion notification, actively monitor for EOA feedback.
 
 ### Checking for Messages
 
-Check for unread messages from EOA:
+Check your inbox using the `agent-messaging` skill. Look for unread messages from the orchestrator.
 
-```bash
-amp-inbox
-```
-
-To read a specific message:
-
-```bash
-amp-read <message-id>
-```
+To read a specific message, use the `agent-messaging` skill's read operation with the message ID to see its full content.
 
 ### Polling Interval
 
@@ -234,17 +226,20 @@ Use this checklist when processing feedback:
 
 ### Immediate Acknowledgment
 
-Send acknowledgment within 5 minutes of receiving feedback. Reply directly to the feedback message:
+Send acknowledgment within 5 minutes of receiving feedback. Reply directly to the feedback message using the `agent-messaging` skill:
+- **Action**: reply to the original message by its ID
+- **Content**: "Feedback received and understood. Processing now. Action items: [number]. Estimated completion: [Time estimate]."
 
-```bash
-amp-reply <message-id> "Feedback received and understood. Processing now. Action items: [number]. Estimated completion: [Time estimate]."
-```
+**Verify**: confirm the reply appears in your sent messages.
 
-Or send a new acknowledgment message:
+Alternatively, send a new acknowledgment message using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "ACK: [Original Subject]"
+- **Content**: "Feedback received and understood. Processing now. Action items: [number]. Estimated completion: [Time estimate]."
+- **Type**: ack
+- **Priority**: normal
 
-```bash
-amp-send orchestrator-master "ACK: [Original Subject]" "Feedback received and understood. Processing now. Action items: [number]. Estimated completion: [Time estimate]." --type ack
-```
+**Verify**: confirm the acknowledgment was delivered.
 
 ### Acknowledgment Components
 
@@ -258,11 +253,14 @@ amp-send orchestrator-master "ACK: [Original Subject]" "Feedback received and un
 
 ### After Completing Revisions
 
-Send revision complete notification:
+Send a revision complete notification to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "REVISED: [Task ID] - Revisions Complete"
+- **Content**: list all completed revisions with commit hashes and confirm the work is ready for review
+- **Type**: notification
+- **Priority**: high
 
-```bash
-amp-send orchestrator-master "REVISED: [Task ID] - Revisions Complete" "All requested revisions have been completed. Changes: 1) [Requested change] - completed (commit [hash]). Ready for review." --type notification --priority high
-```
+**Verify**: confirm the revision notification was delivered.
 
 ## 6.5 Examples
 
@@ -270,42 +268,50 @@ amp-send orchestrator-master "REVISED: [Task ID] - Revisions Complete" "All requ
 
 **Situation**: EOA approved the task.
 
-```bash
-# Received approval message, reply to acknowledge
-amp-reply <message-id> "Approval received. Thank you for the review. Awaiting merge authorization or will merge if authorized."
-```
+Reply to the approval message using the `agent-messaging` skill:
+- **Action**: reply to the original message by its ID
+- **Content**: "Approval received. Thank you for the review. Awaiting merge authorization or will merge if authorized."
+
+**Verify**: confirm the reply was sent.
 
 ### Example 2: Processing Revision Request
 
 **Situation**: EOA requested changes.
 
-```bash
-# Send acknowledgment
-amp-reply <message-id> "Revision request received. Will address all 3 items: 1) Add input validation for order quantity 2) Fix edge case when order total is zero 3) Update error message for clarity. Estimated completion: 1 hour."
-```
+Reply to the revision request using the `agent-messaging` skill:
+- **Action**: reply to the original message by its ID
+- **Content**: "Revision request received. Will address all 3 items: 1) Add input validation for order quantity 2) Fix edge case when order total is zero 3) Update error message for clarity. Estimated completion: 1 hour."
 
-```bash
-# After completing revisions
-amp-send orchestrator-master "REVISED: TASK-456 - Revisions Complete" "All 3 requested revisions have been completed and tested. Changes: 1) Add input validation for order quantity - completed (commit a1b2c3d) - Added validation to reject quantities < 1. 2) Fix edge case when order total is zero - completed (commit e4f5g6h) - Now returns 400 error for zero-total orders. 3) Update error message for clarity - completed (commit i7j8k9l) - Error messages now include specific field names. All tests passing. Ready for review." --type notification --priority high
-```
+**Verify**: confirm the acknowledgment was sent.
+
+After completing revisions, send a notification to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "REVISED: TASK-456 - Revisions Complete"
+- **Content**: "All 3 requested revisions have been completed and tested. Changes: 1) Add input validation for order quantity - completed (commit a1b2c3d) - Added validation to reject quantities < 1. 2) Fix edge case when order total is zero - completed (commit e4f5g6h) - Now returns 400 error for zero-total orders. 3) Update error message for clarity - completed (commit i7j8k9l) - Error messages now include specific field names. All tests passing. Ready for review."
+- **Type**: notification
+- **Priority**: high
+
+**Verify**: confirm the revision notification was delivered.
 
 ### Example 3: Handling Rejection with Rework
 
 **Situation**: Task was rejected, need to rework.
 
-```bash
-# Send acknowledgment with clarification request
-amp-reply <message-id> "Rejection received. I understand the issues and will rework the implementation. Understanding: The implementation did not handle the required multi-currency support. Will rework to include currency conversion. Question: Should I use the existing CurrencyConverter service or implement new conversion logic? Estimated rework time: 3 hours."
-```
+Reply to the rejection message using the `agent-messaging` skill:
+- **Action**: reply to the original message by its ID
+- **Content**: "Rejection received. I understand the issues and will rework the implementation. Understanding: The implementation did not handle the required multi-currency support. Will rework to include currency conversion. Question: Should I use the existing CurrencyConverter service or implement new conversion logic? Estimated rework time: 3 hours."
+
+**Verify**: confirm the reply was sent.
 
 ### Example 4: Processing Clarification Response
 
 **Situation**: EOA answered clarification questions.
 
-```bash
-# Acknowledge clarification response
-amp-reply <message-id> "Clarification received and understood. Will use PostgreSQL JSONB columns for flexible metadata storage as clarified. Resuming implementation with clarified approach."
-```
+Reply to the clarification response using the `agent-messaging` skill:
+- **Action**: reply to the original message by its ID
+- **Content**: "Clarification received and understood. Will use PostgreSQL JSONB columns for flexible metadata storage as clarified. Resuming implementation with clarified approach."
+
+**Verify**: confirm the reply was sent.
 
 ## Error Handling
 
@@ -318,16 +324,22 @@ amp-reply <message-id> "Clarification received and understood. Will use PostgreS
 
 ### Requesting Clarification on Feedback
 
-If feedback is unclear:
+If feedback is unclear, send a clarification request to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "RE: REVISION: [TASK_ID] - Clarification Needed"
+- **Content**: describe which revision item is unclear and list specific questions
+- **Type**: request
+- **Priority**: high
 
-```bash
-amp-send orchestrator-master "RE: REVISION: TASK-123 - Clarification Needed" "Need clarification on revision item #2 (Improve performance). Questions: 1) What is the target performance metric? 2) Which specific operation should be optimized?" --type request --priority high
-```
+**Verify**: confirm the clarification request was delivered.
 
 ### Reporting Inability to Implement
 
-If a requested change cannot be implemented:
+If a requested change cannot be implemented, send an alert to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "CANNOT IMPLEMENT: [TASK_ID] - [Revision Item]"
+- **Content**: describe the technical constraint preventing implementation, explain why it is impossible, and propose an alternative approach
+- **Type**: alert
+- **Priority**: urgent
 
-```bash
-amp-send orchestrator-master "CANNOT IMPLEMENT: TASK-123 - Revision Item #3" "Cannot implement requested revision due to technical constraint. Item #3: Use synchronous API calls. Reason: The external API only supports async webhooks. Synchronous calls are not available. Alternative proposal: Implement polling mechanism to check for updates every 5 seconds. Awaiting decision." --type alert --priority urgent
-```
+**Verify**: confirm the alert was delivered.

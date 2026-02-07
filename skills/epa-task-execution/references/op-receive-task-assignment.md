@@ -29,11 +29,7 @@ Before executing this operation:
 
 ### Step 1.1: Read Incoming AI Maestro Message
 
-Check for unread messages in your inbox:
-
-```bash
-amp-inbox
-```
+Check your inbox using the `agent-messaging` skill. Process all unread messages.
 
 Look for messages where:
 - `content.type` is `"task"` or `"assignment"`
@@ -87,11 +83,14 @@ If validation fails:
 
 ### Step 1.4: Acknowledge Receipt to Orchestrator
 
-Send acknowledgment message:
+Send an acknowledgment message to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: the sender's session name (from the incoming message)
+- **Subject**: "ACK: [TASK_ID] received"
+- **Content**: "Task received and validated. Beginning work."
+- **Type**: acknowledgment
+- **Priority**: normal
 
-```bash
-amp-send <SENDER_SESSION_NAME> "ACK: <TASK_ID> received" "Task received and validated. Beginning work." --type acknowledgment --priority normal
-```
+**Verify**: confirm the acknowledgment appears in your sent messages.
 
 ## Checklist
 

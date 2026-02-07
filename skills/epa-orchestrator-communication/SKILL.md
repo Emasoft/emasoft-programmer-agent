@@ -19,7 +19,7 @@ This skill defines all communication protocols between the Emasoft Programmer Ag
 
 ## Overview
 
-The EPA-EOA communication channel uses AMP (Agent Messaging Protocol) for asynchronous inter-agent communication. AMP provides CLI commands (`amp-send`, `amp-inbox`, `amp-read`, `amp-reply`, `amp-status`) for structured, reliable message exchange.
+The EPA-EOA communication channel uses asynchronous inter-agent messaging provided by the globally installed `agent-messaging` skill. That skill defines the current commands and syntax for sending, receiving, reading, replying to, and checking the status of messages. Always read the `agent-messaging` skill at runtime to determine the exact commands -- never hardcode messaging command names in your workflow.
 
 ## When to Use This Skill
 
@@ -72,9 +72,9 @@ All messages to EOA must include a `type` field in the content object:
 
 Before using any operation in this skill:
 
-1. **AMP identity is initialized**: Verify with `cat ~/.agent-messaging/IDENTITY.md`. If not initialized, run `amp-init --auto`
-2. **AMP is operational**: Verify with `amp-status`
-3. **EOA is active**: The orchestrator agent session must be available
+1. **Messaging identity is initialized**: Read the `agent-messaging` skill and follow its initialization instructions. Verify your identity is set up before sending any messages.
+2. **Messaging service is operational**: Use the `agent-messaging` skill's status check operation to confirm connectivity.
+3. **EOA is active**: The orchestrator agent session must be available.
 
 ## Operations Reference
 
@@ -156,68 +156,65 @@ Use to handle feedback from EOA after PR review.
 - 6.4 Acknowledgment Protocol
 - 6.5 Examples
 
-## AMP Quick Reference
+## Messaging Quick Reference
+
+All messaging operations below are performed using the `agent-messaging` skill. Read that skill to learn the current command syntax.
 
 ### Send Message to EOA
 
-```bash
-amp-send orchestrator-master "[SUBJECT]" "[MESSAGE_BODY]" --type [MESSAGE_TYPE] --priority [PRIORITY]
-```
+Send a message to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: the subject line for this message
+- **Content**: the message body text
+- **Type**: the message type (see Message Types table above)
+- **Priority**: the priority level (see Message Priority Levels table above)
+
+**Verify**: confirm the message appears in your sent messages.
 
 ### Check for Messages from EOA
 
-```bash
-amp-inbox
-```
+Check your inbox using the `agent-messaging` skill. Process all unread messages before proceeding.
 
 ### Read a Specific Message
 
-```bash
-amp-read <message-id>
-```
+Read the message by its ID using the `agent-messaging` skill to see its full content.
 
 ### Reply to a Message (Acknowledge)
 
-```bash
-amp-reply <message-id> "Acknowledged and processing."
-```
+Reply to the message using the `agent-messaging` skill, confirming receipt and stating your next action.
 
-### Check AMP Status
+### Check Messaging Status
 
-```bash
-amp-status
-```
+Use the `agent-messaging` skill's status check operation to verify the messaging service is running and your identity is configured.
 
-### Check AMP Identity
+### Verify Messaging Identity
 
-```bash
-cat ~/.agent-messaging/IDENTITY.md
-```
+Use the `agent-messaging` skill's identity check operation to confirm your session name is registered as your messaging identity.
 
 ## Error Handling
 
 | Error | Cause | Resolution |
 |-------|-------|------------|
-| `AMP identity not found` | AMP not initialized | Run `amp-init --auto` |
-| `Recipient not found` | EOA session not registered | Wait for EOA to start or notify user |
-| `Message delivery failed` | Network or service issue | Retry with `amp-send` |
-| `AMP status: offline` | AMP service not running | Check with `amp-status`, restart AI Maestro service |
+| Identity not found | Messaging not initialized | Read the `agent-messaging` skill and follow its initialization instructions |
+| Recipient not found | EOA session not registered | Wait for EOA to start or notify user |
+| Message delivery failed | Network or service issue | Retry the send operation using the `agent-messaging` skill |
+| Messaging service offline | Service not running | Use the `agent-messaging` skill's status check, restart AI Maestro service |
 
 ## Troubleshooting
 
-### AMP Connection Issues
+### Messaging Connection Issues
 
-If AMP commands fail:
+If messaging operations fail:
 
-1. Check AMP status: `amp-status`
-2. Verify identity: `cat ~/.agent-messaging/IDENTITY.md`
-3. Re-initialize if needed: `amp-init --auto`
+1. Use the `agent-messaging` skill's status check operation to verify connectivity
+2. Use the `agent-messaging` skill's identity check operation to verify your identity is set up
+3. Re-initialize your identity following the `agent-messaging` skill's initialization instructions
 
 ### EOA Not Responding
 
 If EOA does not respond within expected time:
 
-1. Check EOA status via `amp-status`
+1. Check the messaging service status using the `agent-messaging` skill
 2. Escalate to user if EOA is unavailable
 3. Document the delay in status update
 
@@ -226,6 +223,6 @@ If EOA does not respond within expected time:
 If message delivery fails:
 
 1. Verify recipient name is correct
-2. Check AMP status: `amp-status`
+2. Check messaging service status using the `agent-messaging` skill
 3. Retry up to 3 times with 5-second delays
 4. Report to user if all retries fail

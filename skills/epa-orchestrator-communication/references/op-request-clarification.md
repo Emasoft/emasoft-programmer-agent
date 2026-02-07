@@ -86,8 +86,8 @@ Follow these steps to request clarification:
 2. **Formulate specific questions**: Create clear, answerable questions (not vague requests)
 3. **Document your current understanding**: Show what you already know
 4. **Compose the message**: Use the format specified in section 1.2
-5. **Send via AMP**: Execute the `amp-send` command
-6. **Wait for response**: Monitor inbox for EOA reply
+5. **Send via the `agent-messaging` skill**: Use the skill's send operation to deliver the request to the orchestrator
+6. **Wait for response**: Check your inbox using the `agent-messaging` skill for EOA reply
 7. **Acknowledge receipt**: Confirm you received the clarification
 8. **Update task understanding**: Incorporate clarification into your work
 
@@ -106,11 +106,14 @@ Use this checklist before sending a clarification request:
 
 ## 1.3 Sending the Request
 
-Execute this command to send the clarification request:
+Send the clarification request to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "CLARIFICATION: [TASK_ID] - [Brief Topic]"
+- **Content**: include the structured request with your specific questions, what you already understand (context), and how the lack of clarity affects your progress (impact)
+- **Type**: request
+- **Priority**: high
 
-```bash
-amp-send orchestrator-master "CLARIFICATION: TASK-123 - API Authentication Method" "I need clarification on the authentication method for the external API integration. Questions: 1) Should I use OAuth2 or API key authentication? 2) Is there an existing credentials store I should use? Context: The task mentions integrating with ExternalService API but does not specify the authentication approach. I found two authentication methods in their documentation. Impact: Cannot proceed with API client implementation until authentication approach is confirmed." --type request --priority high
-```
+**Verify**: confirm the clarification request appears in your sent messages.
 
 ## 1.4 Handling the Response
 
@@ -125,17 +128,20 @@ When EOA responds to your clarification request:
 
 ### Acknowledgment Format
 
-When you receive a clarification response, reply directly to it:
+When you receive a clarification response, reply directly to it using the `agent-messaging` skill:
+- **Action**: reply to the original message by its ID
+- **Content**: confirm understanding and state how you will proceed based on the clarification
 
-```bash
-amp-reply <message-id> "Clarification received. Will proceed with OAuth2 authentication using the central credentials store."
-```
+**Verify**: confirm the reply was sent.
 
-Or send a new acknowledgment message:
+Alternatively, send a new acknowledgment message using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "ACK: CLARIFICATION: [TASK_ID] - [Topic]"
+- **Content**: confirm understanding and state your planned approach
+- **Type**: ack
+- **Priority**: normal
 
-```bash
-amp-send orchestrator-master "ACK: CLARIFICATION: TASK-123 - API Authentication Method" "Clarification received. Will proceed with OAuth2 authentication using the central credentials store." --type ack
-```
+**Verify**: confirm the acknowledgment was delivered.
 
 ## 1.5 Examples
 
@@ -143,48 +149,58 @@ amp-send orchestrator-master "ACK: CLARIFICATION: TASK-123 - API Authentication 
 
 **Situation**: Task says "optimize database queries" without specifying targets.
 
-```bash
-amp-send orchestrator-master "CLARIFICATION: TASK-456 - Database Optimization Targets" "I need clarification on the performance targets for database query optimization. Questions: 1) What is the target query response time? 2) Which specific queries should be prioritized? 3) Are there memory usage constraints to consider? Context: The task mentions optimizing database queries but does not specify performance targets or which queries are problematic. Current slowest query takes 2.3 seconds. Impact: Cannot determine optimization success criteria or prioritization without targets." --type request --priority high
-```
+Send a clarification request to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "CLARIFICATION: TASK-456 - Database Optimization Targets"
+- **Content**: "I need clarification on the performance targets for database query optimization. Questions: 1) What is the target query response time? 2) Which specific queries should be prioritized? 3) Are there memory usage constraints to consider? Context: The task mentions optimizing database queries but does not specify performance targets or which queries are problematic. Current slowest query takes 2.3 seconds. Impact: Cannot determine optimization success criteria or prioritization without targets."
+- **Type**: request
+- **Priority**: high
+
+**Verify**: confirm the clarification request was delivered.
 
 ### Example 2: Missing Dependency Information
 
 **Situation**: Task requires integration with a service not mentioned in project docs.
 
-```bash
-amp-send orchestrator-master "CLARIFICATION: TASK-789 - PaymentGateway Service Details" "I need details about the PaymentGateway service for integration. Questions: 1) What is the PaymentGateway API endpoint URL? 2) Is there existing client code I should reuse? 3) What test environment is available? Context: Task references PaymentGateway service but I found no documentation or existing code for it in the codebase. Impact: Cannot begin integration work without service details." --type request --priority high
-```
+Send a clarification request to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "CLARIFICATION: TASK-789 - PaymentGateway Service Details"
+- **Content**: "I need details about the PaymentGateway service for integration. Questions: 1) What is the PaymentGateway API endpoint URL? 2) Is there existing client code I should reuse? 3) What test environment is available? Context: Task references PaymentGateway service but I found no documentation or existing code for it in the codebase. Impact: Cannot begin integration work without service details."
+- **Type**: request
+- **Priority**: high
+
+**Verify**: confirm the clarification request was delivered.
 
 ### Example 3: Conflicting Requirements
 
 **Situation**: Two parts of the task description contradict each other.
 
-```bash
-amp-send orchestrator-master "CLARIFICATION: TASK-101 - Conflicting Error Handling Requirements" "The task contains conflicting requirements for error handling. Questions: 1) Should errors fail fast (as stated in section 2) or be silently logged (as stated in section 4)? 2) Which requirement takes precedence? Context: Section 2 says to implement fail-fast error handling. Section 4 says errors should be logged silently without disrupting the user. These approaches are mutually exclusive. Impact: Cannot implement error handling without knowing which approach to use." --type request --priority high
-```
+Send a clarification request to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "CLARIFICATION: TASK-101 - Conflicting Error Handling Requirements"
+- **Content**: "The task contains conflicting requirements for error handling. Questions: 1) Should errors fail fast (as stated in section 2) or be silently logged (as stated in section 4)? 2) Which requirement takes precedence? Context: Section 2 says to implement fail-fast error handling. Section 4 says errors should be logged silently without disrupting the user. These approaches are mutually exclusive. Impact: Cannot implement error handling without knowing which approach to use."
+- **Type**: request
+- **Priority**: high
+
+**Verify**: confirm the clarification request was delivered.
 
 ## Error Handling
 
 | Error | Cause | Resolution |
 |-------|-------|------------|
-| `AMP identity not found` | AMP not initialized | Run `amp-init --auto` |
-| `Recipient not found: orchestrator-master` | EOA session not registered | Wait for EOA to start or notify user |
-| `AMP status: offline` | AMP service not running | Check `amp-status`, restart AI Maestro |
-| `No response within 30 minutes` | EOA busy or unavailable | Send reminder with `--priority urgent` |
+| Identity not found | Messaging not initialized | Read the `agent-messaging` skill and follow its initialization instructions |
+| Recipient not found | EOA session not registered | Wait for EOA to start or notify user |
+| Messaging service offline | Messaging service not running | Use the `agent-messaging` skill's status check, restart AI Maestro |
+| No response within 30 minutes | EOA busy or unavailable | Resend with urgent priority using the `agent-messaging` skill |
 | `Response does not answer questions` | Miscommunication | Send follow-up with specific unanswered questions |
 
 ### Retry Logic
 
 If message delivery fails:
 
-```bash
-# Retry up to 3 times with 5-second delays
-for i in 1 2 3; do
-  if amp-send orchestrator-master "[SUBJECT]" "[MESSAGE]" --type request --priority high; then
-    echo "Message sent successfully"
-    break
-  fi
-  echo "Attempt $i failed, retrying in 5 seconds..."
-  sleep 5
-done
-```
+1. Wait 5 seconds
+2. Attempt to send the message again using the `agent-messaging` skill
+3. If it fails again, wait 5 seconds and retry one more time (maximum 3 attempts total)
+4. If all 3 attempts fail, report the messaging failure to the user
+
+**Verify**: after each retry, check whether the message appears in your sent messages before retrying.

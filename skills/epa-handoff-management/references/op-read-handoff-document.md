@@ -120,11 +120,14 @@ Re-run the `last_test_command` to verify the checkpoint is still valid before co
 
 ### Step 7: Acknowledge Receipt
 
-After successfully reading the handoff, notify the delegating agent:
+After successfully reading the handoff, notify the delegating agent using the `agent-messaging` skill:
+- **Recipient**: the delegating agent's session name (from the handoff's `from` field)
+- **Subject**: "Handoff received: [task-name]"
+- **Content**: confirm receipt, state which phase you are resuming from
+- **Type**: acknowledgment
+- **Priority**: normal
 
-```bash
-amp-send <delegating-agent> "Handoff received: <task-name>" "Received handoff for <task-name>. Resuming from Phase 2." --type acknowledgment --priority normal
-```
+**Verify**: confirm the acknowledgment appears in your sent messages.
 
 ## Checklist
 

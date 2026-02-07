@@ -128,7 +128,7 @@ Follow these steps to report status:
 2. **Identify blockers**: Note any issues preventing progress
 3. **Estimate completion**: Calculate realistic time estimate
 4. **Compose message**: Use the format specified in section 2.2
-5. **Send via AMP**: Execute the `amp-send` command
+5. **Send via the `agent-messaging` skill**: Use the skill's send operation to deliver the status update to the orchestrator
 6. **Continue work**: Resume task after sending update
 
 ## Checklist
@@ -146,19 +146,25 @@ Use this checklist before sending a status update:
 
 ## 2.4 Sending Status Updates
 
-Execute this command to send a status update:
+Send a status update to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent (e.g., "orchestrator-master")
+- **Subject**: "STATUS: [TASK-ID] - [Current Phase]"
+- **Content**: include all fields from the format in section 2.2 (phase, progress percentage, completed items, in-progress items, remaining items, blockers, estimated completion)
+- **Type**: status
+- **Priority**: normal
 
-```bash
-amp-send orchestrator-master "STATUS: TASK-123 - Implementation Phase" "Implementation in progress. Tests passing, working on edge cases. Phase: implementation. Progress: 45%. Completed: Unit tests written (12 tests), Core function implemented, Happy path working. In progress: Edge case handling. Remaining: Error handling, Refactoring, Documentation update. Blockers: none. Estimated completion: 2 hours." --type status
-```
+**Verify**: confirm the status message appears in your sent messages.
 
 ### Status Update When Delayed
 
-If progress is slower than expected:
+If progress is slower than expected, send a delayed status update using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "STATUS: [TASK-ID] - Implementation Delayed"
+- **Content**: include the same fields as a regular status update, plus the delay reason and revised completion estimate
+- **Type**: status
+- **Priority**: high (elevated because of the delay)
 
-```bash
-amp-send orchestrator-master "STATUS: TASK-123 - Implementation Delayed" "Implementation taking longer than expected due to complexity. Phase: implementation. Progress: 35%. Completed: Unit tests written, Core function implemented. In progress: Complex edge case handling. Remaining: Additional edge cases, Error handling, Refactoring, Documentation. Blockers: none. Estimated completion: 4 hours (revised from 2 hours). Delay reason: Edge cases more complex than anticipated." --type status --priority high
-```
+**Verify**: confirm the delayed status message was delivered.
 
 ## 2.5 Examples
 
@@ -166,39 +172,59 @@ amp-send orchestrator-master "STATUS: TASK-123 - Implementation Delayed" "Implem
 
 **Situation**: Beginning work on a new task.
 
-```bash
-amp-send orchestrator-master "STATUS: TASK-456 - Starting Development" "Starting work on TASK-456. Analyzed requirements, beginning test writing. Phase: test-writing. Progress: 5%. Completed: Requirements analysis, Approach planning. In progress: Writing unit tests. Remaining: Complete test suite, Implementation, Refactoring, Documentation. Blockers: none. Estimated completion: 3 hours." --type status
-```
+Send a message to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "STATUS: TASK-456 - Starting Development"
+- **Content**: "Starting work on TASK-456. Analyzed requirements, beginning test writing. Phase: test-writing. Progress: 5%. Completed: Requirements analysis, Approach planning. In progress: Writing unit tests. Remaining: Complete test suite, Implementation, Refactoring, Documentation. Blockers: none. Estimated completion: 3 hours."
+- **Type**: status
+- **Priority**: normal
+
+**Verify**: confirm the message appears in your sent messages.
 
 ### Example 2: Milestone Reached
 
 **Situation**: All tests written and passing.
 
-```bash
-amp-send orchestrator-master "STATUS: TASK-456 - Tests Complete" "All tests written and implementation complete. Moving to refactoring. Phase: refactoring. Progress: 65%. Completed: Unit tests (15 tests), Core implementation, Edge case handling, Error handling. In progress: Code cleanup and refactoring. Remaining: Refactoring, Documentation update, Final review prep. Blockers: none. Estimated completion: 1 hour." --type status
-```
+Send a message to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "STATUS: TASK-456 - Tests Complete"
+- **Content**: "All tests written and implementation complete. Moving to refactoring. Phase: refactoring. Progress: 65%. Completed: Unit tests (15 tests), Core implementation, Edge case handling, Error handling. In progress: Code cleanup and refactoring. Remaining: Refactoring, Documentation update, Final review prep. Blockers: none. Estimated completion: 1 hour."
+- **Type**: status
+- **Priority**: normal
+
+**Verify**: confirm the message was delivered successfully.
 
 ### Example 3: Ready for Review
 
 **Situation**: All work complete, ready for EOA review.
 
-```bash
-amp-send orchestrator-master "STATUS: TASK-456 - Ready for Review" "Task complete. All tests passing, code refactored, documentation updated. Phase: review-prep. Progress: 100%. Completed: Unit tests (15 tests, all passing), Core implementation, Edge case handling, Error handling, Refactoring, Documentation update. In progress: None - awaiting review. Remaining: none. Blockers: none." --type status
-```
+Send a message to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "STATUS: TASK-456 - Ready for Review"
+- **Content**: "Task complete. All tests passing, code refactored, documentation updated. Phase: review-prep. Progress: 100%. Completed: Unit tests (15 tests, all passing), Core implementation, Edge case handling, Error handling, Refactoring, Documentation update. In progress: None - awaiting review. Remaining: none. Blockers: none."
+- **Type**: status
+- **Priority**: normal
+
+**Verify**: confirm the message was delivered successfully.
 
 ### Example 4: Status with Blockers
 
 **Situation**: Progress blocked by external dependency.
 
-```bash
-amp-send orchestrator-master "STATUS: TASK-789 - Partially Blocked" "Implementation partially blocked. Completed independent work, waiting on API access. Phase: implementation. Progress: 40%. Completed: Unit tests written, Local logic implemented, Mock integration tests. In progress: Blocked - cannot complete API integration. Remaining: Real API integration, End-to-end testing, Refactoring, Documentation. Blockers: Waiting for API credentials from external team (ETA unknown). Estimated completion: Unknown until blocker resolved." --type status --priority high
-```
+Send a message to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent
+- **Subject**: "STATUS: TASK-789 - Partially Blocked"
+- **Content**: "Implementation partially blocked. Completed independent work, waiting on API access. Phase: implementation. Progress: 40%. Completed: Unit tests written, Local logic implemented, Mock integration tests. In progress: Blocked - cannot complete API integration. Remaining: Real API integration, End-to-end testing, Refactoring, Documentation. Blockers: Waiting for API credentials from external team (ETA unknown). Estimated completion: Unknown until blocker resolved."
+- **Type**: status
+- **Priority**: high
+
+**Verify**: confirm the message was delivered successfully.
 
 ## Error Handling
 
 | Error | Cause | Resolution |
 |-------|-------|------------|
-| `AMP status: offline` | AMP service not running | Check `amp-status`, start AI Maestro service |
+| Messaging service offline | Messaging service not running | Use the `agent-messaging` skill's status check, start AI Maestro service |
 | `Message delivery failed` | Network issue | Retry after 5 seconds |
 | `Invalid progress_percent` | Value outside 0-100 | Use integer between 0 and 100 |
 | `Empty completed array` | No work done yet | Include at least "Task analysis" |

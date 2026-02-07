@@ -110,11 +110,14 @@ If ANY criterion is NOT PASSED:
 
 ### Step 6.4: Report Completion to Orchestrator
 
-Send completion message with validation summary:
+Send a completion message with validation summary to the orchestrator using the `agent-messaging` skill:
+- **Recipient**: your assigned orchestrator agent session
+- **Subject**: "COMPLETE: [TASK_ID]"
+- **Content**: "Task completed. All acceptance criteria validated." Include the validation summary with total criteria, passed count, and failed count.
+- **Type**: completion
+- **Priority**: normal
 
-```bash
-amp-send <ORCHESTRATOR_SESSION> "COMPLETE: <TASK_ID>" "Task completed. All acceptance criteria validated." --type completion --priority normal
-```
+**Verify**: confirm the completion message appears in your sent messages.
 
 ## Checklist
 
