@@ -140,7 +140,7 @@ gh pr create \
   --title "feat(auth): add OAuth2 login" \
   --body "..." \
   --reviewer "username1,username2" \
-  --label "enhancement,needs-review"
+  --label "enhancement,ai-review"
 ```
 
 Or add after creation:

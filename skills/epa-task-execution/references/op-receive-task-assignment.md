@@ -142,7 +142,7 @@ Response:
     "type": "acknowledgment",
     "task_id": "EPA-001",
     "message": "Task received. 3 acceptance criteria identified.",
-    "status": "in_progress"
+    "status": "in-progress"
   }
 }
 ```

@@ -90,6 +90,16 @@ Contents:
 - 4.4 Rust: clippy configuration
 - 4.5 Other languages: linter setup
 
+For ruff linter and formatter configuration, see [ruff-configuration-patterns.md](references/ruff-configuration-patterns.md):
+- When to configure ruff for a new project
+- Standard ruff.toml template for Emasoft projects
+- What each rule set does and why it is enabled
+- What each ignored rule means and why it is ignored
+- Per-file ignore patterns and when to use them
+- Formatter settings (quote style, indent, line endings)
+- How to run ruff check and ruff format
+- Customizing ruff for specific project types
+
 ### 5. Setup Testing Framework
 **File**: [op-setup-testing-framework.md](references/op-setup-testing-framework.md)
 

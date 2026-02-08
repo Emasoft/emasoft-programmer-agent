@@ -70,7 +70,7 @@ Structure your status update with these components:
       "[Completed item 1]",
       "[Completed item 2]"
     ],
-    "in_progress": "[Current work item]",
+    "in-progress": "[Current work item]",
     "remaining": [
       "[Remaining item 1]",
       "[Remaining item 2]"
@@ -89,7 +89,7 @@ Structure your status update with these components:
 | `phase` | Current development phase (see section 2.3) | Yes |
 | `progress_percent` | Percentage complete (0-100) | Yes |
 | `completed` | Array of completed items | Yes |
-| `in_progress` | Current work item | Yes |
+| `in-progress` | Current work item | Yes |
 | `remaining` | Array of remaining items | Yes |
 | `blockers` | Array of blocking issues (empty if none) | Yes |
 | `estimated_completion` | Time estimate to completion | No |
