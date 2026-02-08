@@ -155,3 +155,4 @@ uv run python scripts/epa_validate_plugin.py --verbose
 ## See Also
 
 > **Related Plugins**: This agent works with the Emasoft Orchestrator Agent (EOA), Emasoft Integrator Agent (EIA), and Emasoft Architect Agent (EAA). Each agent plugin is installed independently.
+
