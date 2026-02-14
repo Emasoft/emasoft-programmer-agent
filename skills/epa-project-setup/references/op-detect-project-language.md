@@ -7,6 +7,27 @@ operation-number: 1
 
 # Operation: Detect Project Language
 
+
+## Contents
+
+- [When to Use](#when-to-use)
+- [Prerequisites](#prerequisites)
+- [Procedure](#procedure)
+  - [Step 1: Check for Configuration Files](#step-1-check-for-configuration-files)
+  - [Step 2: Examine File Extensions](#step-2-examine-file-extensions)
+  - [Step 3: Check for TypeScript vs JavaScript](#step-3-check-for-typescript-vs-javascript)
+  - [Step 4: Handle Multi-Language Projects](#step-4-handle-multi-language-projects)
+  - [Step 5: Confirm Detection](#step-5-confirm-detection)
+- [Checklist](#checklist)
+- [Examples](#examples)
+  - [Example 1: Python Project Detection](#example-1-python-project-detection)
+  - [Example 2: TypeScript Project Detection](#example-2-typescript-project-detection)
+  - [Example 3: Multi-Language Project](#example-3-multi-language-project)
+- [Error Handling](#error-handling)
+  - [No Configuration Files Found](#no-configuration-files-found)
+  - [Conflicting Indicators](#conflicting-indicators)
+  - [Empty Project](#empty-project)
+
 This operation identifies the primary programming language of a project by examining files, directory structure, and configuration files.
 
 ## When to Use

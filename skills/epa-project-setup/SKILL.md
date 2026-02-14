@@ -1,6 +1,6 @@
 ---
 name: epa-project-setup
-description: Setup project configuration and tooling. Use when starting work on new project.
+description: Setup project configuration and tooling. Use when starting work on new project. Trigger with /epa-project-setup or when initializing a new project.
 license: MIT
 compatibility: Requires SERENA MCP activated.
 metadata:
@@ -163,7 +163,7 @@ Execute these operations in order for a complete project setup:
 
 ## Checklist
 
-Use this checklist to track setup progress:
+Copy this checklist and track your progress:
 
 - [ ] Project language detected and confirmed
 - [ ] Package manager initialized and verified

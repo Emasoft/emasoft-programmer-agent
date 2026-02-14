@@ -7,6 +7,30 @@ operation-number: 5
 
 # Operation: Setup Testing Framework
 
+
+## Contents
+
+- [When to Use](#when-to-use)
+- [Prerequisites](#prerequisites)
+- [Procedure](#procedure)
+  - [Python: pytest Configuration](#python-pytest-configuration)
+  - [JavaScript/TypeScript: jest or vitest Configuration](#javascripttypescript-jest-or-vitest-configuration)
+  - [Rust: cargo test Configuration](#rust-cargo-test-configuration)
+  - [Go: go test Configuration](#go-go-test-configuration)
+  - [.NET: dotnet test Configuration](#net-dotnet-test-configuration)
+  - [C/C++: gtest Configuration](#cc-gtest-configuration)
+  - [Swift: XCTest Configuration](#swift-xctest-configuration)
+- [Checklist](#checklist)
+- [Examples](#examples)
+  - [Example 1: Python pytest Setup](#example-1-python-pytest-setup)
+  - [Example 2: TypeScript vitest Setup](#example-2-typescript-vitest-setup)
+  - [Example 3: Rust cargo test Setup](#example-3-rust-cargo-test-setup)
+- [Error Handling](#error-handling)
+  - [Tests Not Found](#tests-not-found)
+  - [Import Errors in Tests](#import-errors-in-tests)
+  - [Tests Hang or Timeout](#tests-hang-or-timeout)
+  - [Coverage Not Working](#coverage-not-working)
+
 This operation configures the testing framework appropriate for the project language, enabling test execution and coverage reporting.
 
 ## When to Use

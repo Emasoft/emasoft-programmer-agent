@@ -9,6 +9,23 @@ version: 1.0.0
 
 # Operation: Implement Code
 
+
+## Contents
+
+- [When to Use](#when-to-use)
+- [Prerequisites](#prerequisites)
+- [Procedure](#procedure)
+  - [Step 4.1: Analyze Existing Code Structure with SERENA](#step-41-analyze-existing-code-structure-with-serena)
+  - [Step 4.2: Plan Implementation Approach](#step-42-plan-implementation-approach)
+  - [Step 4.3: Write Code in Small, Testable Increments](#step-43-write-code-in-small-testable-increments)
+  - [Step 4.4: Add Documentation and Comments](#step-44-add-documentation-and-comments)
+- [Checklist](#checklist)
+- [Examples](#examples)
+  - [Example 1: Implementing a Service Function](#example-1-implementing-a-service-function)
+  - [Example 2: Creating a New Module](#example-2-creating-a-new-module)
+- [Error Handling](#error-handling)
+- [Related Operations](#related-operations)
+
 Write code that fulfills the task requirements and acceptance criteria.
 
 ## When to Use

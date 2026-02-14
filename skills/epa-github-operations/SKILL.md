@@ -1,6 +1,6 @@
 ---
 name: epa-github-operations
-description: Git and GitHub operations for the Emasoft Programmer Agent. Use when cloning repositories, creating feature branches, committing changes, opening pull requests, or responding to code review feedback.
+description: Git and GitHub operations for the Emasoft Programmer Agent. Use when cloning repositories, creating feature branches, committing changes, opening pull requests, or responding to code review feedback. Trigger with /epa-github-operations or when performing git and GitHub CLI operations.
 license: MIT
 compatibility: Requires gh CLI authenticated.
 metadata:
@@ -207,6 +207,8 @@ gh pr edit 15 --add-reviewer eia-feature-reviewer
 ```
 
 ## Checklist - Full GitHub Workflow
+
+Copy this checklist and track your progress:
 
 - [ ] Clone or fork repository
 - [ ] Create feature branch with proper naming

@@ -7,6 +7,30 @@ operation-number: 2
 
 # Operation: Initialize Package Manager
 
+
+## Contents
+
+- [When to Use](#when-to-use)
+- [Prerequisites](#prerequisites)
+- [Procedure](#procedure)
+  - [Python: uv Initialization](#python-uv-initialization)
+  - [JavaScript/TypeScript: bun or pnpm Initialization](#javascripttypescript-bun-or-pnpm-initialization)
+  - [Rust: cargo Initialization](#rust-cargo-initialization)
+  - [Go: go mod Initialization](#go-go-mod-initialization)
+  - [.NET: dotnet Initialization](#net-dotnet-initialization)
+  - [C/C++: cmake or make Initialization](#cc-cmake-or-make-initialization)
+  - [Swift: swift or xcodebuild Initialization](#swift-swift-or-xcodebuild-initialization)
+- [Checklist](#checklist)
+- [Examples](#examples)
+  - [Example 1: Python Project with uv](#example-1-python-project-with-uv)
+  - [Example 2: TypeScript Project with bun](#example-2-typescript-project-with-bun)
+  - [Example 3: Rust Project with cargo](#example-3-rust-project-with-cargo)
+- [Error Handling](#error-handling)
+  - [Package Manager Not Installed](#package-manager-not-installed)
+  - [Permission Denied](#permission-denied)
+  - [Lock File Conflicts](#lock-file-conflicts)
+  - [Virtual Environment Activation Fails (Python)](#virtual-environment-activation-fails-python)
+
 This operation sets up the package manager for the project based on the detected programming language.
 
 ## When to Use

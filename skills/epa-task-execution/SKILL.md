@@ -1,6 +1,6 @@
 ---
 name: epa-task-execution
-description: Execute programming tasks per requirements. Use when implementing assigned tasks.
+description: Execute programming tasks per requirements. Use when implementing assigned tasks. Trigger with /epa-task-execution or when receiving task assignments.
 license: MIT
 compatibility: Requires SERENA MCP activated.
 metadata:
@@ -71,6 +71,36 @@ The orchestrator assigns task `TASK-055: Add caching layer to data fetcher`. The
 1. Parses requirements and discovers dependency on `TASK-054: Implement Redis client wrapper`, which is not yet complete.
 2. Does NOT proceed with implementation. Instead, sends a blocker report to the orchestrator: "TASK-055 blocked by TASK-054 (Redis client wrapper not yet available). Awaiting guidance."
 3. Waits for orchestrator response before taking any action.
+
+### Example Input/Output
+
+**Input:** Task assignment message from orchestrator:
+
+```
+Subject: "Task TASK-042: Add string sanitization to utils"
+Content: {
+  "type": "task-assignment",
+  "task_id": "TASK-042",
+  "requirements": "Add sanitize_input(text: str) -> str that strips HTML tags and normalizes whitespace.",
+  "acceptance_criteria": ["Function exists in src/utils.py", "All HTML tags removed", "Whitespace normalized", "Unit tests pass"],
+  "priority": "normal"
+}
+```
+
+**Output:** Completed implementation report sent back to orchestrator:
+
+```
+Subject: "Task TASK-042 complete: string sanitization added"
+Content: {
+  "type": "completion-notification",
+  "task_id": "TASK-042",
+  "files_modified": ["src/utils.py", "tests/test_utils.py"],
+  "tests": "4 passed, 0 failed",
+  "acceptance_criteria_met": ["Function exists in src/utils.py: YES", "All HTML tags removed: YES", "Whitespace normalized: YES", "Unit tests pass: YES"],
+  "branch": "feature/task-042-sanitize-input",
+  "commit": "feat(utils): add sanitize_input function"
+}
+```
 
 ## Purpose
 
@@ -162,7 +192,7 @@ Verify all criteria are met before completion.
 
 ## Master Checklist
 
-Use this checklist to track task execution progress:
+Copy this checklist and track your progress:
 
 - [ ] Task assignment received and acknowledged
 - [ ] Requirements parsed and understood

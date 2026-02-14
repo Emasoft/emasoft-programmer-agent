@@ -1,6 +1,6 @@
 ---
 name: epa-handoff-management
-description: Create and receive handoff documents for seamless context transfer between agents and sessions. Use when the programmer agent needs to transfer work state to another agent, resume from a previous session, report bugs discovered during implementation, or save in-progress work before a context clear.
+description: Create and receive handoff documents for context transfer between agents. Use for work transfer, session resume, or bug reports. Trigger with /epa-handoff or when creating/reading handoff documents.
 license: MIT
 compatibility: Requires AI Maestro running.
 metadata:
@@ -136,6 +136,18 @@ This skill produces the following artifacts:
 - **Bug reports** (`bugs/<bug-id>.md`): Structured bug reports stored in the `bugs/` subdirectory of the task handoff folder. Each report includes reproduction steps, expected versus actual behavior, code references, and severity classification.
 - **Archived handoffs** (`archive/<timestamp>-current.md`): Previous versions of handoff documents preserved with timestamp prefixes for audit trail and rollback capability.
 - **AI Maestro notifications**: JSON messages sent to the receiving agent via the AI Maestro API confirming that a handoff document has been created or updated.
+
+## Checklist
+
+Copy this checklist and track your progress:
+
+- [ ] Determine handoff operation needed (Read, Create, Bug Report, or Document Work State)
+- [ ] Read the corresponding operation reference file
+- [ ] Verify handoff directory exists
+- [ ] Execute the handoff operation
+- [ ] Validate the handoff document (all required YAML fields present)
+- [ ] Send notification via AI Maestro to receiving agent
+- [ ] Archive previous version if updating an existing handoff
 
 ## Error Handling
 

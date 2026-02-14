@@ -1,6 +1,6 @@
 ---
 name: epa-orchestrator-communication
-description: Communication with EOA (Orchestrator). Use when sending clarification requests, status updates, blocker reports, improvement proposals, or task completion notifications to the Emasoft Orchestrator Agent (EOA) via AI Maestro messaging.
+description: Communication with EOA (Orchestrator) via AI Maestro. Use for clarifications, status updates, blockers, and completions. Trigger with /epa-orchestrator-comm or when sending status reports.
 license: MIT
 compatibility: Requires AI Maestro running.
 metadata:
@@ -199,6 +199,20 @@ Use the `agent-messaging` skill's identity check operation to confirm your sessi
 | Recipient not found | EOA session not registered | Wait for EOA to start or notify user |
 | Message delivery failed | Network or service issue | Retry the send operation using the `agent-messaging` skill |
 | Messaging service offline | Service not running | Use the `agent-messaging` skill's status check, restart AI Maestro service |
+
+## Checklist
+
+Copy this checklist and track your progress:
+
+- [ ] Initialize messaging identity via agent-messaging skill
+- [ ] Verify messaging service status
+- [ ] Confirm EOA is active and reachable
+- [ ] Determine communication type (clarification, status, blocker, improvement, completion, feedback)
+- [ ] Read the operation reference file for the chosen type
+- [ ] Compose and send the message with correct type, priority, and content
+- [ ] Verify delivery in sent messages list
+- [ ] Monitor for and process EOA response
+- [ ] Acknowledge receipt of any EOA reply
 
 ## Troubleshooting
 
