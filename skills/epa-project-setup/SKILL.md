@@ -224,7 +224,7 @@ Scenario: You receive a task to work on a Python library project that has a `pyp
 
 ```
 Step 1: Read this SKILL.md (done).
-Step 2: Navigate to /home/user/projects/my-python-lib and confirm write access.
+Step 2: Navigate to {baseDir}/my-python-lib and confirm write access.
 Step 3: Run language detection. Found pyproject.toml and src/*.py files. Detected language: Python.
 Step 4: Run "uv venv --python 3.12" to create virtual environment, then "source .venv/bin/activate".
         Verify with "uv --version". Output: "uv 0.7.12". Success.
@@ -245,7 +245,7 @@ Scenario: You receive a task to work on a TypeScript web application that has a 
 
 ```
 Step 1: Read this SKILL.md (done).
-Step 2: Navigate to /home/user/projects/my-ts-app and confirm write access.
+Step 2: Navigate to {baseDir}/my-ts-app and confirm write access.
 Step 3: Run language detection. Found package.json with "typescript" in devDependencies and src/*.ts files.
         Detected language: TypeScript.
 Step 4: Check for bun.lockb or pnpm-lock.yaml. Found bun.lockb. Package manager: bun.
@@ -267,7 +267,7 @@ Scenario: You receive a task to work on a Rust command-line tool project with an
 
 ```
 Step 1: Read this SKILL.md (done).
-Step 2: Navigate to /home/user/projects/my-rust-cli and confirm write access.
+Step 2: Navigate to {baseDir}/my-rust-cli and confirm write access.
 Step 3: Run language detection. Found Cargo.toml and src/main.rs. Detected language: Rust.
 Step 4: Cargo is the default package manager for Rust. Run "cargo --version".
         Output: "cargo 1.82.0". Success.

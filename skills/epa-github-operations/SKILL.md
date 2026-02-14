@@ -1,6 +1,6 @@
 ---
 name: epa-github-operations
-description: Git and GitHub operations for the Emasoft Programmer Agent. Use when you need to clone repositories, create feature branches, commit changes, open pull requests, or respond to code review feedback.
+description: Git and GitHub operations for the Emasoft Programmer Agent. Use when cloning repositories, creating feature branches, committing changes, opening pull requests, or responding to code review feedback.
 license: MIT
 compatibility: Requires gh CLI authenticated.
 metadata:
@@ -234,8 +234,8 @@ gh pr edit 15 --add-reviewer eia-feature-reviewer
 ## Resources
 
 - **Related Skills**:
-  - [epa-task-execution](../epa-task-execution/SKILL.md) - For implementing code changes, writing tests, and validating acceptance criteria before creating a PR
-  - [epa-orchestrator-communication](../epa-orchestrator-communication/SKILL.md) - For messaging EOA and EIA about PR status and task progress
+  - **epa-task-execution** skill -- For implementing code changes, writing tests, and validating acceptance criteria before creating a PR
+  - **epa-orchestrator-communication** skill -- For messaging EOA and EIA about PR status and task progress
 - **Reference Documents** (in this skill's references directory):
   - [op-clone-repository.md](references/op-clone-repository.md) - Cloning and forking procedures
   - [op-create-feature-branch.md](references/op-create-feature-branch.md) - Branch creation and naming

@@ -1,6 +1,6 @@
 ---
 name: epa-orchestrator-communication
-description: Communication with EOA (Orchestrator). Use when you need to send clarification requests, status updates, blocker reports, improvement proposals, or task completion notifications to the Emasoft Orchestrator Agent (EOA) via AI Maestro messaging.
+description: Communication with EOA (Orchestrator). Use when sending clarification requests, status updates, blocker reports, improvement proposals, or task completion notifications to the Emasoft Orchestrator Agent (EOA) via AI Maestro messaging.
 license: MIT
 compatibility: Requires AI Maestro running.
 metadata:
