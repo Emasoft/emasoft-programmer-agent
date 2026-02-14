@@ -42,7 +42,7 @@ None. The `hooks/hooks.json` is empty -- EPA uses globally installed hooks.
 
 | Script | Description |
 |--------|-------------|
-| `epa_validate_plugin.py` | Plugin structure validator |
+| `validate_plugin.py` | Plugin structure validator |
 
 ## Workflow
 
@@ -149,7 +149,7 @@ The Programmer Agent relies on SERENA MCP for code investigation:
 
 ```bash
 cd OUTPUT_SKILLS/emasoft-programmer-agent
-uv run python scripts/epa_validate_plugin.py --verbose
+uv run python scripts/validate_plugin.py . --verbose
 ```
 
 ## See Also

@@ -505,7 +505,7 @@ All projects use the canonical **8-column kanban system** on GitHub Projects:
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/epa_validate_plugin.py` | Plugin structure validation |
+| `scripts/validate_plugin.py` | Plugin structure validation |
 
 ---
 
