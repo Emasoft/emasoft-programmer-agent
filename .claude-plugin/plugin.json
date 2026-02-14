@@ -1,6 +1,6 @@
 {
   "name": "emasoft-programmer-agent",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "General-purpose programmer agent that executes tasks assigned by the Orchestrator. Uses globally installed skills and SERENA MCP for code navigation.",
   "author": {
     "name": "Emasoft",
