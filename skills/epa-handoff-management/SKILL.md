@@ -1,6 +1,6 @@
 ---
 name: epa-handoff-management
-description: Create and receive handoff documents for context transfer between agents. Use for work transfer, session resume, or bug reports. Trigger with /epa-handoff or when creating/reading handoff documents.
+description: Create and receive handoff documents for context transfer. Use when transferring work, resuming sessions, or filing bug reports. Trigger with /epa-handoff.
 license: MIT
 compatibility: Requires AI Maestro running.
 metadata:

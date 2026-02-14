@@ -1,6 +1,6 @@
 ---
 name: epa-orchestrator-communication
-description: Communication with EOA (Orchestrator) via AI Maestro. Use for clarifications, status updates, blockers, and completions. Trigger with /epa-orchestrator-comm or when sending status reports.
+description: Communication with EOA Orchestrator via AI Maestro. Use when sending clarifications, status updates, blockers, or completions. Trigger with /epa-orchestrator-comm.
 license: MIT
 compatibility: Requires AI Maestro running.
 metadata:

@@ -1,6 +1,6 @@
 ---
 name: epa-github-operations
-description: Git and GitHub operations for the Emasoft Programmer Agent. Use when cloning repositories, creating feature branches, committing changes, opening pull requests, or responding to code review feedback. Trigger with /epa-github-operations or when performing git and GitHub CLI operations.
+description: Git and GitHub operations for EPA. Use when cloning repos, branching, committing, opening PRs, or handling review feedback. Trigger with /epa-github-operations.
 license: MIT
 compatibility: Requires gh CLI authenticated.
 metadata:
