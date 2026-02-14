@@ -1,6 +1,6 @@
 ---
 name: epa-handoff-management
-description: Create and receive handoff documents. Use for work state documentation.
+description: Create and receive handoff documents for seamless context transfer between agents and sessions. Use when the programmer agent needs to transfer work state to another agent, resume from a previous session, report bugs discovered during implementation, or save in-progress work before a context clear.
 license: MIT
 compatibility: Requires AI Maestro running.
 metadata:
@@ -15,7 +15,30 @@ procedure: "proc-handoff-management"
 
 # EPA Handoff Management Skill
 
-This skill enables the Emasoft Programmer Agent to create and receive handoff documents for seamless context transfer between agents and sessions.
+## Overview
+
+This skill enables the Emasoft Programmer Agent (EPA) to create and receive handoff documents for seamless context transfer between agents and sessions. Handoff documents are structured Markdown files with YAML frontmatter that capture work state, task context, bug reports, and checkpoint data. The EPA uses this skill whenever it receives delegated work from the Emasoft Orchestrator Agent (EOA), needs to pass completed work to the Emasoft Integrator Agent (EIA), discovers bugs during implementation, or must save progress before a session ends. All handoff documents are stored under `$CLAUDE_PROJECT_DIR/thoughts/shared/handoffs/` in a standardized directory structure that all agents in the ecosystem can read.
+
+## Prerequisites
+
+Before using this skill, ensure the following conditions are met:
+1. **AI Maestro must be running** on `localhost:23000` for inter-agent messaging notifications when handoffs are created or received.
+2. **The handoff directory must exist** at `$CLAUDE_PROJECT_DIR/thoughts/shared/handoffs/`. Create it with `mkdir -p "$CLAUDE_PROJECT_DIR/thoughts/shared/handoffs/"` if it does not exist.
+3. **The EPA agent must have a valid session name** registered with AI Maestro (format: `epa-<project>-<instance>`), so that handoff notifications reach the correct recipient.
+4. **The `$CLAUDE_PROJECT_DIR` environment variable must be set** to the root of the project directory. This variable is set automatically by Claude Code when a project is loaded.
+5. **Read access to the references directory** at `references/` relative to this skill, which contains the detailed operation guides for each handoff operation.
+
+## Instructions
+
+Follow these numbered steps when performing handoff management:
+
+1. **Determine the handoff operation needed.** Consult the Quick Reference table at the bottom of this document to match your current situation to the correct operation (Read, Create, Write Bug Report, or Document Work State).
+2. **Read the corresponding operation reference file.** Each operation has a dedicated guide in the `references/` directory. Read the full guide before proceeding.
+3. **Verify the handoff directory exists.** Run `mkdir -p "$CLAUDE_PROJECT_DIR/thoughts/shared/handoffs/epa-<task-name>/"` to ensure the task-specific subdirectory is available.
+4. **Execute the operation.** Follow the step-by-step procedure in the reference file. All handoff documents must include YAML frontmatter with fields: `type`, `from`, `to`, `task`, `timestamp`, and `status`.
+5. **Validate the handoff document.** After writing, re-read the document to confirm all required fields are present and the content accurately reflects the current work state.
+6. **Send notification via AI Maestro.** After creating or updating a handoff, send a message to the receiving agent using `curl -X POST "http://localhost:23000/api/messages"` with the handoff file path in the message body.
+7. **Archive previous versions.** If updating an existing handoff, move the previous `current.md` to the `archive/` subdirectory with a timestamp suffix before writing the new version.
 
 ## Purpose
 
@@ -105,3 +128,133 @@ This skill integrates with AI Maestro for inter-agent messaging:
 | Found a bug during implementation | Write Bug Report |
 | Need to pause work for later | Document Work State |
 | Resuming after context clear | Read Handoff Document |
+
+## Output
+
+This skill produces the following artifacts:
+- **Handoff documents** (`current.md`): Markdown files with YAML frontmatter stored at `$CLAUDE_PROJECT_DIR/thoughts/shared/handoffs/epa-<task-name>/current.md`. Contains task context, completed items, pending items, checkpoint state, and file references.
+- **Bug reports** (`bugs/<bug-id>.md`): Structured bug reports stored in the `bugs/` subdirectory of the task handoff folder. Each report includes reproduction steps, expected versus actual behavior, code references, and severity classification.
+- **Archived handoffs** (`archive/<timestamp>-current.md`): Previous versions of handoff documents preserved with timestamp prefixes for audit trail and rollback capability.
+- **AI Maestro notifications**: JSON messages sent to the receiving agent via the AI Maestro API confirming that a handoff document has been created or updated.
+
+## Error Handling
+
+Common errors encountered during handoff management and their resolutions:
+
+| Error | Cause | Resolution |
+|-------|-------|------------|
+| Handoff directory does not exist | `$CLAUDE_PROJECT_DIR/thoughts/shared/handoffs/` was never created | Run `mkdir -p "$CLAUDE_PROJECT_DIR/thoughts/shared/handoffs/epa-<task-name>/"` to create it |
+| AI Maestro notification fails | AI Maestro is not running on `localhost:23000` | Verify AI Maestro is running with `curl -s "http://localhost:23000/api/health"`. If it returns an error, start AI Maestro before retrying |
+| YAML frontmatter parse error | Missing `---` delimiters or invalid YAML syntax in the handoff document | Re-read the handoff document and ensure the frontmatter starts and ends with `---` on its own line, and all values are properly quoted if they contain special characters |
+| Receiving agent not found | The `to` field in the handoff references an agent session name that is not registered with AI Maestro | Check the team registry at `.emasoft/team-registry.json` for valid agent session names, or ask EOA for the correct recipient |
+| Handoff document is stale | A `current.md` already exists from a previous task iteration | Archive the existing document by moving it to `archive/` with a timestamp suffix, then create the new handoff as `current.md` |
+
+## Examples
+
+### Example 1: Creating a handoff after completing implementation
+
+The EPA has finished implementing a feature and needs to pass it to EIA for code review:
+
+```markdown
+---
+type: handoff
+from: epa-svgbbox-programmer-001
+to: eia-svgbbox-reviewer
+task: implement-bbox-calculation
+timestamp: 2026-02-14T10:30:00Z
+status: implementation-complete
+---
+
+# Handoff: implement-bbox-calculation
+
+## Completed Items
+- Implemented `calculate_bbox()` function in `src/bbox/calculator.py`
+- Added unit tests in `tests/unit/test_calculator.py` (12 tests, all passing)
+- Updated type annotations and docstrings
+
+## Files Modified
+- `src/bbox/calculator.py` (new file, 145 lines)
+- `tests/unit/test_calculator.py` (new file, 210 lines)
+
+## Pending Items
+- Code review by EIA
+- Integration test with SVG parser module
+
+## Notes
+- Used numpy for matrix operations as specified in architecture doc
+- Edge case: zero-dimension bounding boxes return empty BBox object (see test_empty_bbox)
+```
+
+After writing this to `$CLAUDE_PROJECT_DIR/thoughts/shared/handoffs/epa-implement-bbox-calculation/current.md`, send a notification:
+
+```bash
+curl -X POST "http://localhost:23000/api/messages" \
+  -H "Content-Type: application/json" \
+  -d '{"to": "eia-svgbbox-reviewer", "subject": "Handoff ready: implement-bbox-calculation", "priority": "normal", "content": {"type": "handoff", "message": "Implementation complete. Handoff at thoughts/shared/handoffs/epa-implement-bbox-calculation/current.md"}}'
+```
+
+### Example 2: Receiving a delegation handoff from EOA
+
+The EPA receives a message from EOA with a task delegation. The first step is to read the handoff:
+
+```bash
+# 1. Read the handoff document
+cat "$CLAUDE_PROJECT_DIR/thoughts/shared/handoffs/eoa-refactor-parser/current.md"
+
+# 2. Extract key fields from YAML frontmatter
+# Look for: task, requirements, deadline, dependencies, checkpoint (if resuming)
+
+# 3. Acknowledge receipt via AI Maestro
+curl -X POST "http://localhost:23000/api/messages" \
+  -H "Content-Type: application/json" \
+  -d '{"to": "eoa-svgbbox-orchestrator", "subject": "Handoff received: refactor-parser", "priority": "normal", "content": {"type": "acknowledgment", "message": "EPA received handoff for refactor-parser. Starting work."}}'
+```
+
+### Example 3: Writing a bug report discovered during implementation
+
+While working on a feature, the EPA discovers a bug in an existing module:
+
+```markdown
+---
+type: bug-report
+from: epa-svgbbox-programmer-001
+task: implement-bbox-calculation
+bug-id: BUG-2026-0214-001
+severity: high
+timestamp: 2026-02-14T11:15:00Z
+---
+
+# Bug Report: SVG path parser returns incorrect coordinates for arc commands
+
+## Reproduction Steps
+1. Load `tests/fixtures/arc-path.svg`
+2. Call `parse_path(svg_content)` from `src/parser/path_parser.py`
+3. Inspect the returned coordinate list for arc (`A`) commands
+
+## Expected Behavior
+Arc command coordinates should be absolute after conversion from relative coordinates.
+
+## Actual Behavior
+Arc commands retain relative coordinates, causing bbox calculation to be offset by the current pen position.
+
+## Affected Code
+- `src/parser/path_parser.py`, function `_parse_arc_command()`, line 87-102
+
+## Related Tests
+- `tests/unit/test_path_parser.py::test_arc_absolute_coords` (currently failing)
+```
+
+Save this to `$CLAUDE_PROJECT_DIR/thoughts/shared/handoffs/epa-implement-bbox-calculation/bugs/BUG-2026-0214-001.md` and escalate to EOA for triage.
+
+## Resources
+
+Related skills, documents, and tools for handoff management:
+
+- **[op-read-handoff-document.md](references/op-read-handoff-document.md)** -- Detailed guide for parsing and processing incoming handoff documents
+- **[op-create-handoff-document.md](references/op-create-handoff-document.md)** -- Detailed guide for creating outgoing handoff documents with proper structure
+- **[op-write-bug-report.md](references/op-write-bug-report.md)** -- Detailed guide for structured bug reporting during implementation
+- **[op-document-work-state.md](references/op-document-work-state.md)** -- Detailed guide for capturing in-progress work state for session resume
+- **AI Maestro messaging API** -- Used for sending handoff notifications between agents (`http://localhost:23000/api/messages`)
+- **Team Registry** (`.emasoft/team-registry.json`) -- Contains valid agent session names needed for the `to` field in handoff documents
+- **EOA Orchestrator Agent** -- The primary source of task delegations and the escalation target for bug reports
+- **EIA Integrator Agent** -- The primary recipient of implementation-complete handoffs for code review

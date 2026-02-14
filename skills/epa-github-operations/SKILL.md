@@ -1,6 +1,6 @@
 ---
 name: epa-github-operations
-description: Git and GitHub operations. Use for branching, commits, PRs.
+description: Git and GitHub operations for the Emasoft Programmer Agent. Use when you need to clone repositories, create feature branches, commit changes, open pull requests, or respond to code review feedback.
 license: MIT
 compatibility: Requires gh CLI authenticated.
 metadata:
@@ -14,6 +14,10 @@ procedure: "proc-complete-task, proc-handle-failed-pr"
 ---
 
 # EPA GitHub Operations
+
+## Overview
+
+This skill provides the Emasoft Programmer Agent (EPA) with standardized procedures for all Git and GitHub operations. It covers the full lifecycle from cloning a repository, creating feature branches, committing code changes with conventional commit messages, opening pull requests via the gh CLI, and responding to EIA code review feedback. All operations use the gh CLI tool and follow the Emasoft ecosystem conventions for branch naming, commit formatting, and PR descriptions. This skill is used during workflow Steps 19 (create PR), 21 (respond to review), and 22 (push fixes after rejection).
 
 This skill provides procedures for Git and GitHub operations within the Emasoft Programmer Agent workflow. Use these operations for repository management, branching, commits, and pull request lifecycle.
 
@@ -31,6 +35,17 @@ This skill provides procedures for Git and GitHub operations within the Emasoft 
 1. **gh CLI installed and authenticated**: Run `gh auth status` to verify
 2. **Git configured**: User name and email set
 3. **Repository access**: Read/write permissions to target repository
+
+## Instructions
+
+1. Verify that the gh CLI is installed and authenticated by running `gh auth status`. If not authenticated, run `gh auth login` and follow the prompts.
+2. Clone or fork the target repository using `gh repo clone <owner>/<repo>` or `gh repo fork <owner>/<repo> --clone`. See [op-clone-repository.md](references/op-clone-repository.md) for details.
+3. Create a feature branch from the latest main branch using the naming convention `<type>/<issue-number>-<short-description>`. Example: `git checkout -b feature/123-add-user-auth main`. See [op-create-feature-branch.md](references/op-create-feature-branch.md).
+4. Make code changes and commit incrementally using conventional commit format: `git commit -m "feat(scope): description"`. See [op-commit-changes.md](references/op-commit-changes.md).
+5. Push the feature branch to the remote: `git push -u origin <branch-name>`.
+6. Create a pull request using `gh pr create --title "<type>(scope): description" --body "..."` with a clear description linking to the relevant issue. See [op-create-pull-request.md](references/op-create-pull-request.md).
+7. If the PR receives review feedback from EIA, read the comments with `gh pr view <number> --comments`, address each comment, commit fixes, and push updates. See [op-respond-to-review.md](references/op-respond-to-review.md).
+8. After pushing fixes, update the PR description if needed and request re-review with `gh pr edit <number> --add-reviewer <reviewer>`. See [op-update-pr-with-fixes.md](references/op-update-pr-with-fixes.md).
 
 ## Operations Reference
 
@@ -129,6 +144,68 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 Example: `feat(auth): add OAuth2 login support`
 
+## Output
+
+When this skill is applied correctly, the following artifacts are produced:
+
+- **Cloned repository**: A local working copy of the target repository with remotes configured for upstream and origin.
+- **Feature branch**: A properly named branch following the `<type>/<issue-number>-<short-description>` convention, pushed to the remote.
+- **Commit history**: One or more commits with conventional commit messages that clearly describe each change.
+- **Pull request**: An open PR on GitHub with a descriptive title, body linking to the relevant issue, and appropriate reviewers assigned.
+- **Review responses**: If review feedback is received, updated commits addressing each comment, with reply comments acknowledging the feedback.
+- **AI Maestro notification**: A message sent to EOA (Orchestrator) confirming PR creation or update status.
+
+## Examples
+
+### Example 1: Creating a Feature Branch and PR for a New Feature
+
+```bash
+# Clone the repository
+gh repo clone Emasoft/svgbbox
+
+# Create feature branch
+git checkout -b feature/42-add-viewbox-parser main
+
+# Make changes, commit with conventional format
+git add src/parser.py
+git commit -m "feat(parser): add viewBox attribute parsing"
+
+# Push and create PR
+git push -u origin feature/42-add-viewbox-parser
+gh pr create --title "feat(parser): add viewBox attribute parsing" --body "Closes #42. Adds parsing support for the viewBox SVG attribute."
+```
+
+### Example 2: Responding to EIA Review Comments
+
+```bash
+# Read the review comments on PR #15
+gh pr view 15 --comments
+
+# Address the feedback by fixing the code
+git add src/parser.py tests/test_parser.py
+git commit -m "fix(parser): handle missing viewBox gracefully per review"
+
+# Push the fix and notify reviewer
+git push origin feature/42-add-viewbox-parser
+gh pr comment 15 --body "Addressed review feedback: added null check for missing viewBox. Ready for re-review."
+```
+
+### Example 3: Handling a Rejected PR
+
+```bash
+# Read rejection reason
+gh pr view 15 --comments
+
+# Fix the issues identified in the review
+git add src/parser.py
+git commit -m "fix(parser): validate viewBox dimensions are positive numbers"
+
+# Push fixes and update PR description
+git push origin feature/42-add-viewbox-parser
+gh pr edit 15 --body "Updated: Added dimension validation per reviewer feedback. Closes #42."
+gh pr edit 15 --add-reviewer eia-feature-reviewer
+```
+
 ## Checklist - Full GitHub Workflow
 
 - [ ] Clone or fork repository
@@ -153,6 +230,22 @@ Example: `feat(auth): add OAuth2 login support`
 
 - **epa-orchestrator-communication**: For messaging EIA about PR status
 - **epa-task-execution**: For implementing code changes, writing tests, and validating acceptance criteria before creating a PR
+
+## Resources
+
+- **Related Skills**:
+  - [epa-task-execution](../epa-task-execution/SKILL.md) - For implementing code changes, writing tests, and validating acceptance criteria before creating a PR
+  - [epa-orchestrator-communication](../epa-orchestrator-communication/SKILL.md) - For messaging EOA and EIA about PR status and task progress
+- **Reference Documents** (in this skill's references directory):
+  - [op-clone-repository.md](references/op-clone-repository.md) - Cloning and forking procedures
+  - [op-create-feature-branch.md](references/op-create-feature-branch.md) - Branch creation and naming
+  - [op-commit-changes.md](references/op-commit-changes.md) - Staging and committing changes
+  - [op-create-pull-request.md](references/op-create-pull-request.md) - PR creation procedures
+  - [op-respond-to-review.md](references/op-respond-to-review.md) - Handling review feedback
+  - [op-update-pr-with-fixes.md](references/op-update-pr-with-fixes.md) - Pushing fixes after rejection
+- **External Documentation**:
+  - [GitHub CLI Manual](https://cli.github.com/manual/) - Full gh CLI reference
+  - [Conventional Commits](https://www.conventionalcommits.org/) - Commit message specification
 
 ## See Also
 

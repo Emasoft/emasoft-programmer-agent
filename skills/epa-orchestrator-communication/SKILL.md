@@ -1,6 +1,6 @@
 ---
 name: epa-orchestrator-communication
-description: Communication with EOA (Orchestrator). Use for clarifications, status updates, blockers.
+description: Communication with EOA (Orchestrator). Use when you need to send clarification requests, status updates, blocker reports, improvement proposals, or task completion notifications to the Emasoft Orchestrator Agent (EOA) via AI Maestro messaging.
 license: MIT
 compatibility: Requires AI Maestro running.
 metadata:
@@ -226,3 +226,75 @@ If message delivery fails:
 2. Check messaging service status using the `agent-messaging` skill
 3. Retry up to 3 times with 5-second delays
 4. Report to user if all retries fail
+
+## Instructions
+
+Follow these numbered steps whenever you need to communicate with the Emasoft Orchestrator Agent (EOA):
+
+1. **Initialize messaging identity**: Read the `agent-messaging` skill and follow its initialization instructions. Verify your session name is registered before proceeding.
+2. **Verify messaging service status**: Use the `agent-messaging` skill's status check operation to confirm the service is running and reachable.
+3. **Confirm EOA is active**: Check that the orchestrator agent session is registered and available to receive messages.
+4. **Determine the communication type**: Identify which operation applies to your situation using the "When to Use This Skill" table above (clarification request, status update, blocker report, improvement proposal, completion notification, or feedback acknowledgment).
+5. **Read the operation reference file**: Open the corresponding reference file listed in the Operations Reference section to learn the exact message format and required fields for that operation type.
+6. **Compose the message**: Build the message with the correct `type` field, appropriate `priority` level, descriptive `subject` line, and structured `content` body as specified in the reference file.
+7. **Send the message**: Use the `agent-messaging` skill's send operation to deliver the message to your assigned EOA session name.
+8. **Verify delivery**: Confirm the message appears in your sent messages list using the `agent-messaging` skill.
+9. **Monitor for response**: Periodically check your inbox for replies from EOA. Process all unread messages before continuing other work.
+10. **Acknowledge receipt**: When you receive a response from EOA, reply using the `agent-messaging` skill to confirm you received it and state your next planned action.
+
+## Output
+
+This skill produces the following artifacts and outcomes:
+
+- **Outbound AI Maestro messages**: Structured JSON messages sent from EPA to EOA, each containing a `type` field (one of the six message types), a `priority` level, a `subject` line, and a formatted `content` body.
+- **Delivery confirmations**: Verification that each sent message was accepted by the AI Maestro messaging service and appears in the sent messages list.
+- **Acknowledgment replies**: Reply messages sent back to EOA confirming receipt of feedback or instructions, stating the EPA's next action.
+- **Communication audit trail**: A chronological record of all EPA-EOA exchanges visible in both agents' message histories, providing traceability for task progress and decisions.
+
+## Examples
+
+### Example 1: Requesting Clarification on Ambiguous Task Requirements
+
+The EPA receives a task to "implement data validation" but the acceptance criteria do not specify which fields require validation or what validation rules to apply.
+
+**Action**: Send a clarification request message to EOA:
+- **Type**: `clarification-request`
+- **Priority**: `high`
+- **Subject**: "Clarification needed: data validation scope for task PROJ-42"
+- **Content**: "Task PROJ-42 says 'implement data validation' but does not specify which fields need validation or what rules apply. Questions: (1) Which input fields require validation? (2) Should validation be schema-based or custom rule-based? (3) Are there existing validation patterns in the codebase to follow?"
+
+**Expected outcome**: EOA replies with specific field names, validation rules, and a pointer to existing patterns.
+
+### Example 2: Reporting a Blocking Issue
+
+The EPA discovers that a required dependency package is not available in the project environment and cannot proceed with implementation.
+
+**Action**: Send a blocker report message to EOA:
+- **Type**: `blocker-report`
+- **Priority**: `urgent`
+- **Subject**: "BLOCKER: Missing dependency 'pydantic-settings' for task PROJ-42"
+- **Content**: "Cannot proceed with task PROJ-42. The package 'pydantic-settings>=2.0' is required for config validation but is not listed in pyproject.toml and is not installed in the project environment. Attempted workarounds: none (adding dependencies is outside EPA scope). Requesting EOA to authorize adding this dependency or provide an alternative approach."
+
+**Expected outcome**: EOA authorizes the dependency addition or reassigns the task with updated instructions.
+
+### Example 3: Notifying Task Completion
+
+The EPA finishes implementing the feature, all tests pass, and the code is committed and pushed to a feature branch.
+
+**Action**: Send a completion notification message to EOA:
+- **Type**: `completion-notification`
+- **Priority**: `high`
+- **Subject**: "Task PROJ-42 complete: data validation implemented"
+- **Content**: "Task PROJ-42 is complete and ready for review. Branch: feature/proj-42-data-validation. Commit: abc1234. Deliverables: (1) src/validators/data_validator.py - new validation module, (2) tests/test_data_validator.py - 12 passing tests, (3) Updated pyproject.toml with pydantic-settings dependency. All tests pass locally. PR created: #87."
+
+**Expected outcome**: EOA acknowledges receipt and routes the PR to the Emasoft Integrator Agent (EIA) for code review.
+
+## Resources
+
+- [op-request-clarification.md](references/op-request-clarification.md) - Detailed format and procedure for sending clarification requests to EOA
+- [op-report-status.md](references/op-report-status.md) - Format and timing guidelines for development status updates
+- [op-report-blocker.md](references/op-report-blocker.md) - Blocker report format, severity levels, and escalation procedure
+- [op-propose-improvement.md](references/op-propose-improvement.md) - Format for design and implementation improvement proposals
+- [op-notify-completion.md](references/op-notify-completion.md) - Completion notification format and deliverables summary requirements
+- [op-receive-feedback.md](references/op-receive-feedback.md) - How to monitor, process, and acknowledge feedback from EOA
+- `agent-messaging` skill (globally installed) - Provides the actual messaging commands and syntax used by all operations in this skill
